@@ -20,7 +20,7 @@
 
 .button[data-wf--button-general--variant='light']:hover .button_light,
 .button[data-wf--button-general--variant='navbar']:hover .button_light {
-  bottom: calc(100% + 8rem);
+  bottom: 3rem;
   opacity: 1;
 }
 

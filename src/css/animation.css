@@ -1,0 +1,56 @@
+/**
+ * Fade-in on viewport entry.
+ * add selector `data-css="fade-in-vw"` to the element to animate.
+ */
+
+ @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    @supports (animation-timeline: view()) {
+      [data-css='fade-in-vw'] {
+        animation: fade-in-vw linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 40%;
+      }
+  
+      @keyframes fade-in-vw {
+        from {
+          opacity: 0;
+          transform: translateY(4rem);
+        }
+  
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+  
+      /**
+       * Fade-in on viewport entry of direct children.
+       * add `data-css="fade-by-step"` to the container.
+       *
+       * Tune on the container (Webflow custom attributes):
+       * data-fade-step-offset   delay before the 1st child
+       * data-fade-step-gap      stagger between children
+       * data-fade-step-duration length of each fade
+       *
+       * Values accept a number (`5`) or a percentage (`5%`).
+       */
+      [data-css='fade-by-step'] {
+        view-timeline: --fade-by-step-tl;
+        --fade-step-offset: 10%;
+        --fade-step-gap: 10%;
+        --fade-step-duration: 10%;
+      }
+  
+      [data-css='fade-by-step'] > * {
+        --fade-step-i: calc(sibling-index() - 1);
+        animation: fade-in-vw linear both;
+        animation-timeline: --fade-by-step-tl;
+        animation-range: entry
+          calc(var(--fade-step-offset) + var(--fade-step-i) * var(--fade-step-gap)) entry
+          calc(
+            var(--fade-step-offset) + var(--fade-step-i) * var(--fade-step-gap) +
+              var(--fade-step-duration)
+          );
+      }
+    }
+}

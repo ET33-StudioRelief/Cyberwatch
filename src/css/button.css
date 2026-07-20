@@ -1,0 +1,68 @@
+.button_icon-wrp {
+    transition: filter 0.3s ease-in-out;
+  }
+  
+  .button:hover > .button_icon-wrp {
+    filter:
+      drop-shadow(0 0 10px #00D4FF)
+      drop-shadow(0 0 5px #00D4FF)
+      drop-shadow(0 0 2px #00D4FF)
+      blur(0.25px);
+  }
+
+  .button[data-wf--button-general--variant='light'] .button_light,
+  .button[data-wf--button-general--variant='navbar'] .button_light {
+    display: block;
+    bottom: -8rem;
+    opacity: 0;
+    transition: bottom 0.9s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: bottom, opacity;
+  }
+
+  .button[data-wf--button-general--variant='light']:hover .button_light,
+  .button[data-wf--button-general--variant='navbar']:hover .button_light {
+    bottom: calc(100% + 8rem);
+    opacity: 1;
+  }
+
+@supports ((-webkit-mask-composite: xor) or (mask-composite: exclude)) {
+    .button {
+      position: relative;
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      inset: -0.125rem;
+      border-radius: inherit;
+      padding: 0.125rem;
+      z-index: 1;
+      background: conic-gradient(
+        from var(--glow-angle, 0deg),
+        transparent 0deg,
+        #00d4ff 30deg,
+        transparent 60deg,
+        transparent 180deg,
+        #00d4ff 210deg,
+        transparent 240deg,
+        transparent 360deg
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      filter: blur(0.25px) drop-shadow(0 0 2px #00d4ff) drop-shadow(0 0 5px #00d4ff)
+        drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 20px #00d4ff);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .button:hover::before {
+      opacity: 1;
+    }
+  }

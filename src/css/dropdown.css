@@ -1,0 +1,11 @@
+.faq-dropdown-component [trigger='dropdown-arrow'] {
+    transition-property: transform;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+    transform-style: preserve-3d;
+  }
+  
+  .faq-dropdown-component.is-open [trigger='dropdown-arrow'] {
+    transform: rotateX(180deg) rotateY(0deg) rotateZ(0deg);
+  }
+  

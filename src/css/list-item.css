@@ -1,0 +1,126 @@
+[data-wf--section-list-layout--variant="list-column"] .item-slot {
+    position: relative;
+  }
+  
+  [data-wf--section-list-layout--variant="list-column"] .item-slot::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, #1089FF 0%, rgba(16, 137, 255, 0.50) 75%, rgba(16, 137, 255, 0.00) 100%);
+  }
+  .blue-listing_items-wrp .item-slot {
+    position: relative;
+    padding-left: 1rem;
+  }
+  .blue-listing_items-wrp .item-slot::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, #1089FF 0%, rgba(16, 137, 255, 0.50) 75%, rgba(16, 137, 255, 0.00) 100%);
+  }
+  .item_component.is-top-left,
+  .item_component.is-top-right,
+  .item_component.is-left-center,
+  .item_component.is-center-right,
+  .item_component.is-bottom-left,
+  .item_component.is-bottom-right {
+    position: relative;
+  }
+
+  /* ::before = bordure verticale (right), ::after = bordure horizontale (bottom) */
+  .item_component.is-top-left::before,
+  .item_component.is-left-center::before,
+  .item_component.is-bottom-left::before,
+  .item_component.is-top-left::after,
+  .item_component.is-top-right::after,
+  .item_component.is-left-center::after,
+  .item_component.is-center-right::after {
+    content: "";
+    position: absolute;
+  }
+
+  /* --- Bordures verticales : colonne gauche uniquement --- */
+  .item_component.is-top-left::before,
+  .item_component.is-left-center::before,
+  .item_component.is-bottom-left::before {
+    right: 0;
+    width: 1px;
+  }
+
+  /* haut-gauche : opaque en bas (vers le 1er croisement) → transparent en haut */
+  .item_component.is-top-left::before {
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  /* milieu-gauche : plein, relie le 1er et le 2e croisement */
+  .item_component.is-left-center::before {
+    top: 0;
+    bottom: 0;
+    background: #1089FF;
+  }
+
+  /* bas-gauche : opaque en haut (vers le 2e croisement) → transparent en bas */
+  .item_component.is-bottom-left::before {
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  /* --- Bordures horizontales : rangées du haut et du milieu --- */
+  .item_component.is-top-left::after,
+  .item_component.is-top-right::after,
+  .item_component.is-left-center::after,
+  .item_component.is-center-right::after {
+    bottom: 0;
+    height: 1px;
+  }
+
+  /* haut-gauche : opaque à droite (vers le centre) → transparent à gauche */
+  .item_component.is-top-left::after {
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  /* haut-droite : opaque à gauche (vers le centre) → transparent à droite */
+  .item_component.is-top-right::after {
+    left: 0;
+    right: 0;
+    background: linear-gradient(270deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  /* milieu-gauche : opaque à droite (vers le centre) → transparent à gauche */
+  .item_component.is-left-center::after {
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  /* milieu-droite : opaque à gauche (vers le centre) → transparent à droite */
+  .item_component.is-center-right::after {
+    left: 0;
+    right: 0;
+    background: linear-gradient(270deg, rgba(16,137,255,0) 0%, rgba(16,137,255,0.5) 25%, #1089FF 100%);
+  }
+
+  [data-wf--typography-item-list--variant="border-gradient-right-col"].item_component {
+    position: relative;
+  }
+
+  [data-wf--typography-item-list--variant="border-gradient-right-col"].item_component::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, #1089FF 0%, rgba(16, 137, 255, 0.50) 75%, rgba(16, 137, 255, 0.00) 100%);
+  }

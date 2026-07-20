@@ -1,0 +1,28 @@
+.accordion_hide-content {
+  transition-property: height, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+}
+
+.accordion-component.is-open .accordion_hide-content {
+  opacity: 1;
+}
+
+.accordion_border {
+  transition-property: height, width, opacity, background;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
+}
+
+.accordion_show-content:hover .accordion_border {
+  height: 100%;
+  opacity: 1;
+}
+
+.accordion-component.is-open .accordion_border {
+  height: 100%;
+  width: 3px;
+  opacity: 1;
+  border-color: transparent;
+  background: linear-gradient(180deg, #1089ff 0%, rgba(16, 137, 255, 0.5) 75%, rgba(16, 137, 255, 0) 100%);
+}

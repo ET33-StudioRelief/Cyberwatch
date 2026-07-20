@@ -1,0 +1,45 @@
+/* ─── Nav functionnality link hover ─── */
+/* Link nudges its content right, arrow slides further right. */
+.nav-functionnality_link {
+    transition: padding-left 0.2s ease;
+  }
+  
+  .nav-functionnality_arrw-btn {
+    transition: transform 0.2s ease;
+  }
+  
+  .nav-functionnality_link:hover {
+    padding-left: 0.5rem;
+  }
+  
+  .nav-functionnality_link:hover .nav-functionnality_arrw-btn {
+    transform: translateX(0.5rem);
+  }
+/** ─── Footer glow ─── */
+.footer_btm-wrp{
+    position: relative;
+    overflow: hidden;
+}
+
+.footer_glow-bg{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 53.625rem;
+    opacity: 0.25;
+    background: radial-gradient(50% 50% at 50% 50%, #1089FF 0%, rgba(16, 137, 255, 0.25) 100%);
+    filter: blur(100px);
+    width: var(--container-small, 53.625rem);
+    height: var(--container-small, 53.625rem);
+}
+@media screen and (max-width: 768px) {
+    .footer_glow-bg{
+        width: var(--container-small, 16.875rem);
+        height: var(--container-small, 16.875rem);
+        border-radius: var(--container-small, 16.875rem);
+        filter: blur(50px);
+    }
+}

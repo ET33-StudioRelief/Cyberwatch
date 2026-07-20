@@ -1,0 +1,124 @@
+/* ─── Scroll hide (initNavbar) ─── */
+/* GPU hint for GSAP yPercent — desktop only to avoid permanent mobile cost. */
+@media (min-width: 768px) {
+  [trigger='navbar'] {
+    will-change: transform;
+  }
+}
+
+/* ─── Scroll surface (initNavbar toggles .scrolled) ─── */
+/* Transparent over the hero, colored + blurred once scrolled past it. */
+[trigger='navbar'] {
+  background: transparent;
+  transition:
+    background 0.4s ease,
+    backdrop-filter 0.4s ease,
+    -webkit-backdrop-filter 0.4s ease;
+}
+
+[trigger='navbar'].scrolled {
+  background: rgba(0, 13, 73, 1) !important;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+/* --- Base : mobile-first (< 1350px) --- */
+.navbar_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  /* Locks page scroll while the mobile menu is open (initNavMenu toggles this on <html>). */
+  html.nav-scroll-lock {
+    overflow: hidden;
+  }
+
+  .navbar_menu {
+    position: absolute;
+    inset: 100% 0 auto 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--_layout---spacing--tiny);
+    background-color: var(--_theme---bg-surface--brand-dark);
+    padding: var(--_layout---spacing--small);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    /* état fermé */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    transition: opacity .2s, transform .2s, visibility 0s .2s;
+  }
+  
+  .navbar_menu.is-open {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: opacity .2s, transform .2s, visibility 0s;
+  }
+  
+  .nav_button {
+    display: flex;
+    padding: 1rem;
+    color: var(--_theme---text-color--primary-light);
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  
+  /* --- Desktop (≥ 1350px) --- */
+  @media screen and (min-width: 1350px) {
+    .nav_button { 
+        display: none;
+    }
+
+    .navbar_menu {
+      position: static;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      background: none;
+      padding: 0;
+  
+      /* reset de l'état fermé */
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .navbar_dropdown-right-col {
+        width:100%;
+    }
+  }
+  /* --- Desktop (< 1350px) --- */
+  @media screen and (max-width: 1350px) {
+    .nav_dropdown,
+    .nav_dropdown-toggle {
+      width: 100%;
+    }
+    .nav_dropdown-toggle,
+    .nav_menu_link  {
+      padding-top: var(--_layout---spacing--large);
+      padding-right: var(--_layout---spacing--large);
+      padding-bottom: var(--_layout---spacing--large);
+      padding-left: var(--_layout---spacing--large);
+      border-top-left-radius: var(--_sizes---border-radius--xxlarge);
+      border-top-right-radius: var(--_sizes---border-radius--xxlarge);
+      border-bottom-left-radius: var(--_layout---spacing--none) !important;
+      border-bottom-right-radius: var(--_layout---spacing--none) !important;
+      background-color: var(--neutral--transparent);
+      font-size: var(--_typography---h6--h6-font-size);
+    }
+    .nav_dropdown-list{
+        flex-direction: column;
+    }
+    .nav_dropdown-plateforme-hightlight,
+    .navbar_dropdown-right-col {
+        width: 100%;
+    }
+    .navbar_dropdown-right-col {
+        flex-direction: column;
+    }
+  }

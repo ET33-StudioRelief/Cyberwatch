@@ -1,0 +1,35 @@
+/** Customer Brand - Align Center if items are less than 4 */
+.customer-brand_content,
+.contact_brands-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .customer-brand_content {
+    column-gap: var(--_layout---spacing--xxxhuge);
+    row-gap: var(--_layout---spacing--xxxhuge);
+  }
+
+.contact_brands-list {
+    column-gap: var(--_layout---spacing--xxlarge);
+    row-gap: var(--_layout---spacing--xxlarge);
+  }
+  
+  .customer-brand_content > *{
+    flex: 0 0 calc(25% - (var(--_layout---spacing--xxxhuge) * 3 / 4));
+  }
+
+  .contact_brands-list > * {
+    flex: 0 0 calc(25% - (var(--_layout---spacing--xxlarge) * 3 / 4));
+  }
+
+  [trigger="card-industry"] .card-industries_img {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  [trigger="card-industry"]:hover .card-industries_img {
+    transform: scale(1.2);
+  }
+  [trigger="card-industry"]:hover .button_arrow_wrap {
+    background-color: var(--_theme---button--tertiary-hover);
+  }

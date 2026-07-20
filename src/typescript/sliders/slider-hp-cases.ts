@@ -12,6 +12,7 @@ export function initHpCasesSlider(selector = '.hp-cases_layout'): void {
     slidesPerView: 'auto',
     spaceBetween: 24,
     rewind: true,
+    grabCursor: true,
     navigation: {
       prevEl,
       nextEl,

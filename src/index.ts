@@ -1,6 +1,9 @@
 import './index.css';
 
+import { initHpAnimation } from './typescript/animations/home';
 import { initBgParallax } from './typescript/animations/parallaxBackground';
+import { initStackedSections } from './typescript/animations/stackedSections';
+import { initStepLines } from './typescript/animations/steps';
 import { initAccordion } from './typescript/components/accordion';
 import { initGlowOrbit } from './typescript/components/button';
 import { initInfoDropdown } from './typescript/components/dropdown';
@@ -24,9 +27,12 @@ window.Webflow.push(() => {
   if (window.location.href.includes('webflow.io')) {
     launchMarkerSDK();
     initBgParallax();
+    initHpAnimation();
     initIndustriesSlider();
     initHpCasesSlider();
     initHpStepsSlider();
+    initStepLines();
+    initStackedSections();
     initTestimonialSlider();
     initInfoDropdown();
   }

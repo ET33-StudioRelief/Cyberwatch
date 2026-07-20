@@ -27,6 +27,7 @@ export function initHpStepsSlider(selector = '.hp-steps_layout'): void {
         slidesPerView: 'auto',
         spaceBetween: 24,
         rewind: true,
+        grabCursor: true,
         navigation: {
           prevEl,
           nextEl,

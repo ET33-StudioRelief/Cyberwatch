@@ -18,6 +18,7 @@ export function initIndustriesSlider(selector = '.hp-industries_layout'): void {
     slidesPerView: 'auto',
     spaceBetween: 40,
     rewind: true,
+    grabCursor: true,
     navigation: {
       prevEl,
       nextEl,

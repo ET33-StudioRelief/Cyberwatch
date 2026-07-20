@@ -16,6 +16,7 @@ export function initTestimonialSlider(selector = '.testimonial_layout'): void {
     spaceBetween: 24,
     rewind: true,
     speed: 600,
+    grabCursor: true,
     navigation: {
       prevEl,
       nextEl,

@@ -1,0 +1,4 @@
+.text-rich-text strong,
+.text-rich-text b {
+  font-weight: 600;
+}

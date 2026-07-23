@@ -8,7 +8,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: 1px;
+  width: 3px;
   background: linear-gradient(
     180deg,
     #1089ff 0%,
@@ -167,5 +167,115 @@
     #1089ff 0%,
     rgba(16, 137, 255, 0.5) 75%,
     rgba(16, 137, 255, 0) 100%
+  );
+}
+
+[data-wf--typography-item-list--variant='border-gradient-left-col'].item_component,
+[data-wf--typography-item-list--variant='border-gradient-l-col-no-title'].item_component,
+[data-wf--typography-item-list--variant='border-gradient-l-col-rich-text'].item_component {
+  position: relative;
+}
+
+[data-wf--typography-item-list--variant='border-gradient-left-col'].item_component::before,
+[data-wf--typography-item-list--variant='border-gradient-l-col-no-title'].item_component::before,
+[data-wf--typography-item-list--variant='border-gradient-l-col-rich-text'].item_component::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    #1089ff 0%,
+    rgba(16, 137, 255, 0.5) 75%,
+    rgba(16, 137, 255, 0) 100%
+  );
+}
+
+/* ==========================================================================
+   Grille 3 colonnes × 2 rangées : bordures internes en dégradé
+   ::before = bordure verticale (right), ::after = bordure horizontale (bottom)
+   Même logique que la grille 2×3 ci-dessus : opaque vers les croisements
+   internes, transparent vers les bords extérieurs de la grille.
+   ========================================================================== */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-left-item'].item_component,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-center-item'].item_component,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-right-item'].item_component,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-left-item'].item_component,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-center-item'].item_component,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-right-item'].item_component {
+  position: relative;
+}
+
+/* --- Bordures verticales internes : colonnes gauche + centre (::before à droite) --- */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-left-item'].item_component::before,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-center-item'].item_component::before,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-left-item'].item_component::before,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-center-item'].item_component::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+/* rangée du haut : opaque en bas (vers le croisement) → transparent en haut */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-left-item'].item_component::before,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-center-item'].item_component::before {
+  background: linear-gradient(
+    180deg,
+    rgba(16, 137, 255, 0) 0%,
+    rgba(16, 137, 255, 0.5) 25%,
+    #1089ff 100%
+  );
+}
+
+/* rangée du bas : opaque en haut (vers le croisement) → transparent en bas */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-left-item'].item_component::before,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-bottom-center-item'].item_component::before {
+  background: linear-gradient(
+    0deg,
+    rgba(16, 137, 255, 0) 0%,
+    rgba(16, 137, 255, 0.5) 25%,
+    #1089ff 100%
+  );
+}
+
+/* --- Bordure horizontale interne : rangée du haut (::after en bas) --- */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-left-item'].item_component::after,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-center-item'].item_component::after,
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-right-item'].item_component::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+}
+
+/* colonne gauche : opaque à droite (vers le croisement) → transparent à gauche */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-left-item'].item_component::after {
+  background: linear-gradient(
+    90deg,
+    rgba(16, 137, 255, 0) 0%,
+    rgba(16, 137, 255, 0.5) 25%,
+    #1089ff 100%
+  );
+}
+
+/* colonne centre : plein, relie les deux croisements internes */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-center-item'].item_component::after {
+  background: #1089ff;
+}
+
+/* colonne droite : opaque à gauche (vers le croisement) → transparent à droite */
+[data-wf--typography-item-list--variant='grid-gradient-3x2-top-right-item'].item_component::after {
+  background: linear-gradient(
+    270deg,
+    rgba(16, 137, 255, 0) 0%,
+    rgba(16, 137, 255, 0.5) 25%,
+    #1089ff 100%
   );
 }

@@ -1,6 +1,6 @@
 import { Swiper } from '../../utils/swiper';
 
-export function initHpCasesSlider(selector = '.hp-cases_layout'): void {
+export function initHpCasesSlider(selector = '.features-slider_layout'): void {
   const container = document.querySelector<HTMLElement>(selector);
   if (!container) return;
 

@@ -1,0 +1,13 @@
+@media (min-width: 992px) and (max-width: 1200px) {
+  .about_component {
+    flex-flow: column;
+  }
+  .about_img-wrp {
+    width: auto;
+    max-height: 20rem;
+    min-width: 0%;
+  }
+  .about_txt-wrp {
+    width: 100%;
+  }
+}

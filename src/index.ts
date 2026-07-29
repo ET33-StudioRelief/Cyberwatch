@@ -11,13 +11,13 @@ import { initInfoDropdown } from './typescript/components/dropdown';
 import { initFooterGlow } from './typescript/components/footer';
 import { initDesktopDropdownHover, initNavbar, initNavMenu } from './typescript/components/navbar';
 import { initShareLinks } from './typescript/components/share-links';
-import { initProgrammeSlider } from './typescript/sliders/programme-slider';
 import { initBlogRelatedSlider } from './typescript/sliders/slider-blog-related';
-import { initHpCasesSlider } from './typescript/sliders/slider-hp-cases';
+import { initCasesSlider } from './typescript/sliders/slider-cases';
 import { initHpStepsSlider } from './typescript/sliders/slider-hp-steps';
 import { initIndustriesSlider } from './typescript/sliders/slider-industries';
+import { initProgrammeSlider } from './typescript/sliders/slider-programme';
 import { initTestimonialSlider } from './typescript/sliders/slider-testimonial';
-import { initTimelineSlider } from './typescript/sliders/timeline-slider';
+import { initTimelineSlider } from './typescript/sliders/slider-timeline';
 import { launchMarkerSDK } from './utils/marker';
 
 window.Webflow ||= [];
@@ -35,7 +35,7 @@ window.Webflow.push(() => {
     initHpAnimation();
     initStepsReveal();
     initIndustriesSlider();
-    initHpCasesSlider();
+    initCasesSlider();
     initHpStepsSlider();
     initProgrammeSlider();
     initBlogRelatedSlider();

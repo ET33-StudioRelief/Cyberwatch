@@ -1,0 +1,6 @@
+.filters_link.is-list-active {
+  border-top-left-radius: var(--_sizes---border-radius--large);
+  border-top-right-radius: var(--_sizes---border-radius--large);
+  background-color: var(--brand--white);
+  background-image: radial-gradient(circle, rgba(16, 137, 255, 0.05), rgba(16, 137, 255, 0.1));
+}

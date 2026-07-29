@@ -1,18 +1,28 @@
 import { ScrollTrigger } from '../../utils/gsap';
 
 /**
- * Ouvrir/fermer un accordéon change la hauteur de la `.section_step`
- * empilée qui le contient, ce qui décale dans le document tout ce qui suit
- * (les points de déclenchement des étapes suivantes). Sans compensation,
- * `ScrollTrigger.refresh()` recalcule ces positions alors que le scroll de
- * l'utilisateur n'a pas bougé, ce qui fait brusquement « sauter » les
- * animations des étapes suivantes. On décale la position de scroll du même
- * delta que le changement de hauteur pour que rien ne bouge à l'écran.
+ * Ouvrir/fermer un accordéon change la hauteur de son conteneur, ce qui
+ * décale dans le document tout ce qui suit (les points de déclenchement des
+ * animations suivantes). Sans compensation, `ScrollTrigger.refresh()`
+ * recalcule ces positions alors que le scroll de l'utilisateur n'a pas
+ * bougé, ce qui fait brusquement « sauter » ces animations. On décale la
+ * position de scroll du même delta que le changement de hauteur pour que
+ * rien ne bouge à l'écran.
+ *
+ * Exception : dans une `.section_step` empilée (voir stackedSections.ts),
+ * la step qui grandit anime son propre ScrollTrigger de révélation de façon
+ * relative à sa propre hauteur (start = son sommet, end = son sommet +
+ * hauteur en trop). Ce ScrollTrigger-là n'a pas décalé, lui : compenser le
+ * scroll ferait avancer artificiellement sa progression à chaque accordéon
+ * ouvert, la traduisant plus haut que nécessaire et découvrant la step
+ * précédente. Pour ces steps-là, on ne touche donc pas au scroll.
  */
-const refreshScrollTriggersAfterResize = (heightBefore: number): void => {
-  const delta = document.documentElement.scrollHeight - heightBefore;
-  if (delta !== 0) {
-    window.scrollTo({ top: window.scrollY + delta, left: window.scrollX });
+const refreshScrollTriggersAfterResize = (heightBefore: number, container: HTMLElement): void => {
+  if (!container.closest('.section_step')) {
+    const delta = document.documentElement.scrollHeight - heightBefore;
+    if (delta !== 0) {
+      window.scrollTo({ top: window.scrollY + delta, left: window.scrollX });
+    }
   }
   ScrollTrigger.refresh();
 };
@@ -35,7 +45,7 @@ const openAccordion = (container: HTMLElement, contentSelector: string): void =>
       content.style.height = 'auto';
     }
     content.removeEventListener('transitionend', onTransitionEnd);
-    refreshScrollTriggersAfterResize(heightBefore);
+    refreshScrollTriggersAfterResize(heightBefore, container);
   };
 
   content.addEventListener('transitionend', onTransitionEnd);
@@ -57,7 +67,7 @@ const closeAccordion = (container: HTMLElement, contentSelector: string): void =
   const onTransitionEnd = (event: TransitionEvent): void => {
     if (event.propertyName !== 'height') return;
     content.removeEventListener('transitionend', onTransitionEnd);
-    refreshScrollTriggersAfterResize(heightBefore);
+    refreshScrollTriggersAfterResize(heightBefore, container);
   };
 
   content.addEventListener('transitionend', onTransitionEnd);

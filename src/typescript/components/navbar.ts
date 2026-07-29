@@ -5,74 +5,27 @@ import { gsap, ScrollTrigger } from '../../utils/gsap';
 const NAV_MENU_DESKTOP_QUERY = '(min-width: 1350px)';
 const SCROLL_LOCK_CLASS = 'nav-scroll-lock';
 const DROPDOWN_VIEWPORT_MARGIN = 16;
-/** Toggles carrying this class get their dropdown list anchored to them via JS instead of Webflow's default full-width positioning (see positionDropdownList). */
-const TOGGLE_ANCHORED_DROPDOWN_CLASS = 'is-wip';
+/** Dropdown lists carrying this class get anchored to their toggle via JS instead of Webflow's default full-width positioning (see positionDropdownList). */
+const ANCHORED_DROPDOWN_LIST_CLASS = 'nav_dropdown-list';
 
 const SCROLL_THRESHOLD = 5;
 const SCROLL_DELTA = 5;
 const SCROLLED_THRESHOLD = 80;
 
-// Disabled: closing open dropdowns before the navbar slides out on scroll down.
-// Not needed for this project — kept here in case it's wanted later.
-// const OPEN_TOGGLE_SELECTOR = '.w-dropdown-toggle.w--open';
-// const OPEN_LIST_SELECTOR = '.w-dropdown-list.w--open';
-// const DEFAULT_DROPDOWN_DURATION = 400;
-//
-// type WebflowJQueryWrapper = {
-//   trigger(event: string): void;
-// };
-//
-// type WebflowJQuery = (element: HTMLElement) => WebflowJQueryWrapper;
-//
-// const wait = (ms: number): Promise<void> =>
-//   new Promise((resolve) => {
-//     window.setTimeout(resolve, ms);
-//   });
-//
-// /** Webflow-native close — keeps internal dropdown state in sync (avoids double-click). */
-// const closeDropdownViaWebflow = (toggle: HTMLElement): Promise<void> => {
-//   const dropdown = toggle.closest<HTMLElement>('.w-dropdown');
-//   if (!dropdown) return Promise.resolve();
-//
-//   const { jQuery } = window as Window & { jQuery?: WebflowJQuery };
-//
-//   if (jQuery) {
-//     jQuery(dropdown).trigger('w-close.w-dropdown');
-//     return Promise.resolve();
-//   }
-//
-//   toggle.dispatchEvent(
-//     new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window })
-//   );
-//   toggle.dispatchEvent(
-//     new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window })
-//   );
-//   return Promise.resolve();
-// };
-
-/**
- * Anchors a dropdown list directly under its own toggle via fixed positioning,
- * instead of Webflow's default absolute positioning (which resolves against
- * whatever ancestor is positioned — here `.navbar`, spanning the full width).
- * Also overrides Webflow's default `min-width: 100%` on `.w-dropdown-list`: once
- * `position: fixed`, that percentage resolves against `.navbar` (the containing
- * block created by its `will-change: transform`), not the small toggle wrapper,
- * so it silently stretches the list back to full viewport width.
- * Nudges it back within the viewport if it would overflow the right edge.
- */
 const positionDropdownList = (toggle: HTMLElement, list: HTMLElement): void => {
   const toggleRect = toggle.getBoundingClientRect();
   list.style.position = 'fixed';
   list.style.top = `${toggleRect.bottom}px`;
-  list.style.left = `${toggleRect.left}px`;
   list.style.right = 'auto';
   list.style.minWidth = '0';
 
-  const overflowRight =
-    list.getBoundingClientRect().right - (window.innerWidth - DROPDOWN_VIEWPORT_MARGIN);
-  if (overflowRight > 0) {
-    list.style.left = `${toggleRect.left - overflowRight}px`;
-  }
+  const toggleCenter = toggleRect.left + toggleRect.width / 2;
+  const listWidth = list.getBoundingClientRect().width;
+  const minLeft = DROPDOWN_VIEWPORT_MARGIN;
+  const maxLeft = window.innerWidth - DROPDOWN_VIEWPORT_MARGIN - listWidth;
+  const centeredLeft = toggleCenter - listWidth / 2;
+
+  list.style.left = `${Math.min(Math.max(centeredLeft, minLeft), maxLeft)}px`;
 };
 
 const resetDropdownListPosition = (list: HTMLElement): void => {
@@ -82,27 +35,6 @@ const resetDropdownListPosition = (list: HTMLElement): void => {
   list.style.right = '';
   list.style.minWidth = '';
 };
-
-// /** Webflow-native close — keeps internal dropdown state in sync (avoids double-click). */
-// const closeDropdownViaWebflow = (toggle: HTMLElement): Promise<void> => {
-//   const dropdown = toggle.closest<HTMLElement>('.w-dropdown');
-//   if (!dropdown) return Promise.resolve();
-//
-//   const { jQuery } = window as Window & { jQuery?: WebflowJQuery };
-//
-//   if (jQuery) {
-//     jQuery(dropdown).trigger('w-close.w-dropdown');
-//     return Promise.resolve();
-//   }
-//
-//   toggle.dispatchEvent(
-//     new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window })
-//   );
-//   toggle.dispatchEvent(
-//     new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window })
-//   );
-//   return Promise.resolve();
-// };
 
 /**
  * Hides the navbar on scroll down (slide up) and reveals it on scroll up (slide down).
@@ -130,33 +62,6 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
   const updateScrolled = (scrollY: number): void => {
     navbar.classList.toggle('scrolled', scrollY > SCROLLED_THRESHOLD);
   };
-
-  // Disabled: closing open dropdowns before the navbar slides out on scroll down.
-  // Not needed for this project — kept here in case it's wanted later.
-  // const getOpenDropdownToggles = (): HTMLElement[] => {
-  //   const toggles = [...navbar.querySelectorAll<HTMLElement>(OPEN_TOGGLE_SELECTOR)];
-  //   if (toggles.length) return toggles;
-  //
-  //   return [...navbar.querySelectorAll<HTMLElement>(OPEN_LIST_SELECTOR)]
-  //     .map(
-  //       (list) =>
-  //         list.closest('.w-dropdown')?.querySelector<HTMLElement>('.w-dropdown-toggle') ?? null
-  //     )
-  //     .filter((toggle): toggle is HTMLElement => toggle !== null);
-  // };
-  //
-  // const closeOpenDropdowns = async (toggles: HTMLElement[]): Promise<void> => {
-  //   await Promise.all(toggles.map(closeDropdownViaWebflow));
-  //   await wait(dropdownCloseDurationMs);
-  // };
-  //
-  // const cancelPendingHide = (): void => {
-  //   if (pendingHide) {
-  //     pendingHide.cancelled = true;
-  //     pendingHide = null;
-  //   }
-  //   isClosingDropdowns = false;
-  // };
 
   const slideNavbarOut = (): void => {
     isHidden = true;
@@ -280,12 +185,12 @@ export function initDesktopDropdownHover(selector = '[trigger="navbar"]'): void 
     const list = dropdown.querySelector<HTMLElement>('.w-dropdown-list');
     if (!toggle || !list) return;
 
-    const isToggleAnchored = toggle.classList.contains(TOGGLE_ANCHORED_DROPDOWN_CLASS);
+    const isListAnchored = list.classList.contains(ANCHORED_DROPDOWN_LIST_CLASS);
 
     const setOpen = (open: boolean): void => {
       toggle.classList.toggle('w--open', open);
       list.classList.toggle('w--open', open);
-      if (!isToggleAnchored) return;
+      if (!isListAnchored) return;
       if (open) positionDropdownList(toggle, list);
       else resetDropdownListPosition(list);
     };

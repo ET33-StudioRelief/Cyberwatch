@@ -129,4 +129,10 @@ html.nav-scroll-lock {
   .navbar_dropdown-right-col {
     flex-direction: column;
   }
+  .nav_dropdown-list.is-mega-menu {
+    background-color: var(--brand--dark-blue);
+  }
+  .navbar_menu.is-open {
+    background: linear-gradient(180deg, rgba(0, 13, 73) 0%, rgba(1, 2, 8) 100%);
+  }
 }

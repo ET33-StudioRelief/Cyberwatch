@@ -57,7 +57,7 @@ const toggleAccordion = (
   openAccordion(container, contentSelector);
 };
 
-const INFO_DROPDOWN_SELECTOR = '.faq-dropdown-component';
+const INFO_DROPDOWN_SELECTOR = '.faq-dropdown_component';
 const INFO_DROPDOWN_CONTENT = '.faq-dropdown_hidden-content';
 const INFO_DROPDOWN_WRAPPER = '.faq_list';
 

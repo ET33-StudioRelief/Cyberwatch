@@ -121,7 +121,9 @@ html.nav-scroll-lock {
     flex-direction: column;
   }
   .nav_dropdown-plateforme-hightlight,
-  .navbar_dropdown-right-col {
+  .navbar_dropdown-right-col,
+  .nav_dropdown-industries {
+    min-width: 100%;
     width: 100%;
   }
   .navbar_dropdown-right-col {

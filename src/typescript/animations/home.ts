@@ -171,3 +171,51 @@ export function initHpAnimation(selector = '[data-hp-animation]'): void {
     }
   );
 }
+
+export function initStepsReveal(): void {
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.hp-steps-card_component'));
+  if (cards.length === 0) return;
+
+  const getContent = (card: HTMLElement): HTMLElement[] =>
+    Array.from(card.querySelectorAll<HTMLElement>('.heading-style-h5, .hp-steps-card_video-wrp'));
+
+  cards.forEach((card) => {
+    getContent(card).forEach((el) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    });
+  });
+
+  let played = false;
+  const reveal = (): void => {
+    if (played) return;
+    played = true;
+    cards.forEach((card, index) => {
+      window.setTimeout(() => {
+        getContent(card).forEach((el) => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        });
+      }, index * 250);
+    });
+  };
+
+  const section = cards[0].closest<HTMLElement>('.hp-steps_layout') ?? cards[0];
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        reveal();
+        obs.disconnect();
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  observer.observe(section);
+
+  const rect = section.getBoundingClientRect();
+  if (rect.top < window.innerHeight && rect.bottom > 0) reveal();
+}

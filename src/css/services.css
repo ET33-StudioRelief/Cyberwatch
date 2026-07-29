@@ -1,0 +1,9 @@
+@media screen and (min-width: 992px) and (max-width: 1270px) {
+  .programme_grid {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+  .programe_txt-wrp {
+    max-width: var(--_sizes---max-width--small);
+  }
+}

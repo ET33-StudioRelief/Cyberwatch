@@ -1,10 +1,18 @@
-.button_icon-wrp {
+.button[data-wf--button-general--variant='base'] .button_icon-wrp {
   transition: filter 0.3s ease-in-out;
 }
 
-.button:hover > .button_icon-wrp {
+.button[data-wf--button-general--variant='base']:hover > .button_icon-wrp {
   filter: drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 5px #00d4ff) drop-shadow(0 0 2px #00d4ff)
     blur(0.25px);
+}
+
+.button[data-wf--button-general--variant='tertiary'] .button_icon-wrp {
+  transition: transform 0.3s ease-in-out;
+}
+
+.button[data-wf--button-general--variant='tertiary']:hover > .button_icon-wrp {
+  transform: translateX(0.25rem);
 }
 
 .button[data-wf--button-general--variant='light'] .button_light,
@@ -25,11 +33,11 @@
 }
 
 @supports ((-webkit-mask-composite: xor) or (mask-composite: exclude)) {
-  .button {
+  .button[data-wf--button-general--variant='base'] {
     position: relative;
   }
 
-  .button::before {
+  .button[data-wf--button-general--variant='base']::before {
     content: '';
     position: absolute;
     inset: -0.125rem;
@@ -61,7 +69,7 @@
     transition: opacity 0.2s ease;
   }
 
-  .button:hover::before {
+  .button[data-wf--button-general--variant='base']:hover::before {
     opacity: 1;
   }
 }

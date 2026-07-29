@@ -6,9 +6,12 @@ import { gsap } from '../../utils/gsap';
  * only while hovered (paused tween, no work done otherwise) and is skipped entirely
  * under reduced motion.
  *
+ * Defaults to the main button variant only (`data-wf--button-general--variant="base"`)
+ * — other variants (tertiary, light, navbar, …) don't get the glow ring.
+ *
  * @param selector - CSS selector targeting the button element(s).
  */
-export function initGlowOrbit(selector = '.button'): void {
+export function initGlowOrbit(selector = '.button[data-wf--button-general--variant="base"]'): void {
   if (!document.querySelector(selector)) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 

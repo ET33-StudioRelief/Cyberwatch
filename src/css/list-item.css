@@ -220,12 +220,14 @@
 
 [data-wf--typography-item-list--variant='border-gradient-left-col'].item_component,
 [data-wf--typography-item-list--variant='border-gradient-l-col-no-title'].item_component,
+[data-wf--typography-item-list--variant='border-left-gradient---no-title'].item_component,
 [data-wf--typography-item-list--variant='border-gradient-l-col-rich-text'].item_component {
   position: relative;
 }
 
 [data-wf--typography-item-list--variant='border-gradient-left-col'].item_component::before,
 [data-wf--typography-item-list--variant='border-gradient-l-col-no-title'].item_component::before,
+[data-wf--typography-item-list--variant='border-left-gradient---no-title'].item_component::before,
 [data-wf--typography-item-list--variant='border-gradient-l-col-rich-text'].item_component::before {
   content: '';
   position: absolute;

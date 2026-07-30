@@ -2,4 +2,7 @@
   #plateform-slider-nav {
     display: flex !important;
   }
+  .blue-light_grid {
+    grid-template-columns: 1fr;
+  }
 }

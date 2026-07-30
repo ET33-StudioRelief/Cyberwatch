@@ -7,3 +7,22 @@
     max-width: var(--_sizes---max-width--small);
   }
 }
+@media screen and (min-width: 992px) and (max-width: 1300px) {
+  .img-center-layout_card {
+    grid-template-columns: 1fr;
+  }
+  .list-layout_grid {
+    display: flex;
+    flex-flow: column;
+    grid-template-columns: 1fr;
+  }
+  .list-layout_grid.is-align-center {
+    flex-flow: column-reverse;
+  }
+  .list-layout_txt-wrp {
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}

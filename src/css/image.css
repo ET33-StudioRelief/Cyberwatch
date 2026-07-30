@@ -5,3 +5,6 @@
     rgba(16, 137, 255, 0.15) 100%
   );
 }
+.asset-slot {
+  display: flex !important;
+}

@@ -11,3 +11,14 @@
     width: 100%;
   }
 }
+@media screen and (min-width: 992px) and (max-width: 1270px) {
+  .joins-us_layout {
+    flex-flow: column;
+  }
+  .joins-us_txt-wrp {
+    max-width: var(--_sizes---max-width--small);
+  }
+  .blue-light_grid.is-flex {
+    flex-flow: column;
+  }
+}

@@ -8,11 +8,12 @@ export function initTestimonialSlider(selector = '.testimonial_layout'): void {
   const prevEl = scope.querySelector<HTMLElement>('[trigger="testimonial-prev-slide"]');
   const nextEl = scope.querySelector<HTMLElement>('[trigger="testimonial-next-slide"]');
   const paginationEl = scope.querySelector<HTMLElement>('[trigger="testimonial-pagination"]');
+  const slidesCount = container.querySelectorAll('.swiper-wrapper > .swiper-slide').length;
 
   new Swiper(container, {
     slidesPerView: 'auto',
     centeredSlides: true,
-    initialSlide: 1,
+    initialSlide: slidesCount <= 2 ? 0 : 1,
     spaceBetween: 24,
     rewind: true,
     speed: 600,

@@ -25,4 +25,11 @@
     justify-content: flex-start;
     align-items: center;
   }
+  .list-layout_item-grid {
+    grid-template-columns: 1fr;
+  }
+  .item_component {
+    justify-content: flex-start;
+    align-items: center;
+  }
 }

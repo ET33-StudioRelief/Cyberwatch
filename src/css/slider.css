@@ -1,3 +1,12 @@
+/* Swiper's own CSS isn't imported in this project (see src/utils/swiper.ts),
+   so the default "hide nav/pagination when locked" behavior needs to be
+   re-declared here. Swiper adds these classes itself (watchOverflow: true by
+   default) when there aren't enough slides to need navigation. */
+.swiper-button-lock,
+.swiper-pagination-lock {
+  display: none !important;
+}
+
 .slider_pagination {
   display: flex;
   align-items: center;
@@ -30,7 +39,7 @@
   --swiper-wrapper-transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.testimonial_layout .swiper-slide {
+.testimonial_layout .swiper-wrapper > .swiper-slide {
   transform: scale(0.9);
   filter: blur(8px);
   transition:
@@ -38,7 +47,7 @@
     filter 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.testimonial_layout .swiper-slide-active {
+.testimonial_layout .swiper-wrapper > .swiper-slide-active {
   transform: scale(1);
   filter: blur(0px);
 }

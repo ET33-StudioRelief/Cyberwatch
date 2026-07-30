@@ -151,6 +151,54 @@
   );
 }
 
+/* ==========================================================================
+   Mobile : la grille 2 colonnes passe en 1 colonne (grid-template-columns: 1fr),
+   ce qui casse le pattern de bordures internes right/bottom conçu pour la
+   grille. On annule ::before (bordure verticale right) et on remplace ::after
+   par une bordure bottom dégradée 3px sur chaque item_component de la grille,
+   avec un gap entre les items pour aérer l'empilement.
+   ========================================================================== */
+@media screen and (max-width: 1300px) {
+  .item_component.is-top-left::before,
+  .item_component.is-left-center::before,
+  .item_component.is-bottom-left::before {
+    content: none;
+  }
+
+  .item_component.is-top-left::after,
+  .item_component.is-top-right::after,
+  .item_component.is-left-center::after,
+  .item_component.is-center-right::after,
+  .item_component.is-bottom-left::after,
+  .item_component.is-bottom-right::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      #1089ff 0%,
+      rgba(16, 137, 255, 0.5) 75%,
+      rgba(16, 137, 255, 0) 100%
+    );
+  }
+  .item_component.is-bottom-right,
+  .item_component.is-bottom-left,
+  .item_component.is-top-left,
+  .item_component.is-top-right,
+  .item_component.is-left-center,
+  .item_component.is-center-right {
+    padding: 0.5rem 0rem;
+  }
+
+  .list-layout_item-grid {
+    gap: var(--_layout---spacing--large);
+  }
+}
+
 [data-wf--typography-item-list--variant='border-gradient-right-col'].item_component {
   position: relative;
 }

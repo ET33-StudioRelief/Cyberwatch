@@ -18,10 +18,13 @@ import { initIndustriesSlider } from './typescript/sliders/slider-industries';
 import { initProgrammeSlider } from './typescript/sliders/slider-programme';
 import { initTestimonialSlider } from './typescript/sliders/slider-testimonial';
 import { initTimelineSlider } from './typescript/sliders/slider-timeline';
+import { loadFinsweetAttributes } from './utils/finsweet';
 import { launchMarkerSDK } from './utils/marker';
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
+  loadFinsweetAttributes();
+
   initGlowOrbit();
   initFooterGlow();
   initNavMenu();

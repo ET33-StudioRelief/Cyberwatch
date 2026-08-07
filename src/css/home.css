@@ -134,22 +134,3 @@
   top: 44%;
   left: 18%;
 }
-
-@media screen and (max-width: 767px) {
-  .hp-animation_wrap {
-    height: auto;
-  }
-  .hp-animation_sticky {
-    position: relative;
-    height: auto;
-    padding: 4rem 0;
-  }
-  .hp-animation_card {
-    height: auto;
-    min-height: 32rem;
-    padding: 3rem 0;
-  }
-  .hp-animation_markers {
-    display: none;
-  }
-}

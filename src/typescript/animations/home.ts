@@ -108,68 +108,56 @@ export function initHpAnimation(selector = '[data-hp-animation]'): void {
 
   const mm = gsap.matchMedia();
 
-  mm.add(
-    {
-      isDesktop: '(min-width: 768px)',
-      reduceMotion: '(prefers-reduced-motion: reduce)',
-    },
-    (context) => {
-      const { isDesktop, reduceMotion } = (context.conditions ?? {}) as {
-        isDesktop: boolean;
-        reduceMotion: boolean;
-      };
-      if (!isDesktop || reduceMotion) return;
+  mm.add('(prefers-reduced-motion: no-preference)', () => {
+    const card = wrap.querySelector<HTMLElement>('.hp-animation_card');
+    const content1 = wrap.querySelector<HTMLElement>('[data-hp-content="1"]');
+    const content2 = wrap.querySelector<HTMLElement>('[data-hp-content="2"]');
+    const logo = wrap.querySelector<HTMLElement>('[data-hp-logo]');
+    const scanners = gsap.utils.toArray<HTMLElement>('[data-hp-scanner]', wrap);
+    const squares = gsap.utils.toArray<HTMLElement>('.hp-animation_marker-square', wrap);
+    const circles = gsap.utils.toArray<HTMLElement>('.hp-animation_marker-circle', wrap);
 
-      const card = wrap.querySelector<HTMLElement>('.hp-animation_card');
-      const content1 = wrap.querySelector<HTMLElement>('[data-hp-content="1"]');
-      const content2 = wrap.querySelector<HTMLElement>('[data-hp-content="2"]');
-      const logo = wrap.querySelector<HTMLElement>('[data-hp-logo]');
-      const scanners = gsap.utils.toArray<HTMLElement>('[data-hp-scanner]', wrap);
-      const squares = gsap.utils.toArray<HTMLElement>('.hp-animation_marker-square', wrap);
-      const circles = gsap.utils.toArray<HTMLElement>('.hp-animation_marker-circle', wrap);
+    if (!card || !content1 || !content2 || !logo || scanners.length === 0) return;
 
-      if (!card || !content1 || !content2 || !logo || scanners.length === 0) return;
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: wrap,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+      },
+    });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrap,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1,
-        },
-      });
+    // Step 1 -> 2: scanners roam the card and resolve each dot (orange or cleared).
+    // The intro headline stays put through the blue phase and only fades out
+    // later, once most dots have flipped to orange (matching step 3).
+    tl.addLabel('step1')
+      .addLabel('scan')
+      .to(content1, { opacity: 0, y: -24, duration: 2 }, 'scan+=5');
 
-      // Step 1 -> 2: scanners roam the card and resolve each dot (orange or cleared).
-      // The intro headline stays put through the blue phase and only fades out
-      // later, once most dots have flipped to orange (matching step 3).
-      tl.addLabel('step1')
-        .addLabel('scan')
-        .to(content1, { opacity: 0, y: -24, duration: 2 }, 'scan+=5');
+    SCANNER_ROUTES.forEach((route, i) => {
+      tl.add(buildScannerTimeline(scanners[i], route, circles, squares), 'scan');
+    });
 
-      SCANNER_ROUTES.forEach((route, i) => {
-        tl.add(buildScannerTimeline(scanners[i], route, circles, squares), 'scan');
-      });
+    tl
+      // Step 3 -> 4: logo fades in over the fully scanned card, then keeps growing
+      // slowly as a continuous parallax-like scale tied to scroll.
+      .addLabel('step3')
+      .fromTo(logo, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 1 })
+      .to(logo, { scale: 1.18, duration: 1.8, ease: 'none' })
 
-      tl
-        // Step 3 -> 4: logo fades in over the fully scanned card, then keeps growing
-        // slowly as a continuous parallax-like scale tied to scroll.
-        .addLabel('step3')
-        .fromTo(logo, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 1 })
-        .to(logo, { scale: 1.18, duration: 1.8, ease: 'none' })
+      // Step 4 -> 5: remaining "at risk" dots clear out, logo remains alone
+      .addLabel('step4')
+      .to(squares, { opacity: 0, scale: 0.5, stagger: 0.03, duration: 1 })
 
-        // Step 4 -> 5: remaining "at risk" dots clear out, logo remains alone
-        .addLabel('step4')
-        .to(squares, { opacity: 0, scale: 0.5, stagger: 0.03, duration: 1 })
-
-        // Step 5 -> 6: card settles down to its closing size, logo crossfades
-        // into the closing lockup (logo + headline)
-        .addLabel('step5')
-        .to(card, { height: '29.5rem', duration: 0.8 })
-        .to(logo, { opacity: 0, duration: 0.8 }, '<')
-        .to(content2, { opacity: 1, duration: 0.8 }, '<0.2')
-        .addLabel('step6');
-    }
-  );
+      // Step 5 -> 6: card settles down to its closing size, logo crossfades
+      // into the closing lockup (logo + headline)
+      .addLabel('step5')
+      .to(card, { height: '29.5rem', duration: 0.8 })
+      .to(logo, { opacity: 0, duration: 0.8 }, '<')
+      .to(content2, { opacity: 1, duration: 0.8 }, '<0.2')
+      .addLabel('step6');
+  });
 }
 
 export function initStepsReveal(): void {

@@ -27,7 +27,7 @@ export function initProgrammeSlider(selector = '.programme_list-cards-wrp'): voi
   const paginationEl = scope.querySelector<HTMLElement>('[trigger="programme-pagination"]');
 
   new Swiper(container, {
-    slidesPerView: 'auto',
+    slidesPerView: 3,
     spaceBetween: 24,
     rewind: true,
     grabCursor: true,

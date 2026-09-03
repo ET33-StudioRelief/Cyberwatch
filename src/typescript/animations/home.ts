@@ -119,12 +119,18 @@ export function initHpAnimation(selector = '[data-hp-animation]'): void {
 
     if (!card || !content1 || !content2 || !logo || scanners.length === 0) return;
 
+    // Root font-size in px, re-read on refresh so the closing collapse below
+    // stays correct across viewport/zoom changes.
+    const remToPx = (rem: number): number =>
+      rem * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: wrap,
         start: 'top top',
         end: 'bottom bottom',
         scrub: 1,
+        invalidateOnRefresh: true,
       },
     });
 
@@ -151,9 +157,18 @@ export function initHpAnimation(selector = '[data-hp-animation]'): void {
       .to(squares, { opacity: 0, scale: 0.5, stagger: 0.03, duration: 1 })
 
       // Step 5 -> 6: card settles down to its closing size, logo crossfades
-      // into the closing lockup (logo + headline)
+      // into the closing lockup (logo + headline).
+      // The sticky viewport stays 100vh and CENTERS the card, so once it shrinks
+      // to 29.5rem the dead space *below* the card is half of (100vh - 29.5rem).
+      // We pull the following content up by that amount, IN SYNC with the shrink,
+      // so there's no gap at the end and no overlap while the card is still big.
       .addLabel('step5')
       .to(card, { height: '29.5rem', duration: 0.8 })
+      .to(
+        wrap,
+        { marginBottom: () => (remToPx(29.5) - window.innerHeight) / 2, duration: 0.8 },
+        '<'
+      )
       .to(logo, { opacity: 0, duration: 0.8 }, '<')
       .to(content2, { opacity: 1, duration: 0.8 }, '<0.2')
       .addLabel('step6');

@@ -13,7 +13,7 @@ export function initTimelineSlider(selector = '.timeline_slider'): void {
     wrapperClass: 'timeline_track',
     slideClass: 'timeline_slide',
     slidesPerView: 'auto',
-    spaceBetween: 16,
+    spaceBetween: 0,
     rewind: true,
     grabCursor: true,
     navigation: {

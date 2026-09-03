@@ -7,6 +7,21 @@
   display: none !important;
 }
 
+/* Swiper's core layout CSS (swiper/css) isn't imported, so re-declare the
+   structural rules that turn the wrapper into a single horizontal flex track.
+   Without these, the wrapper falls back to Webflow's flex + gap styling, wraps
+   onto several rows and looks like a grid (and doubles the spaceBetween gap). */
+.swiper-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  column-gap: 0;
+  row-gap: 0;
+}
+
+.swiper-wrapper > .swiper-slide {
+  flex-shrink: 0;
+}
+
 .slider_pagination {
   display: flex;
   align-items: center;

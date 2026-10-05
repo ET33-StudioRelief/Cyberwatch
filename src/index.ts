@@ -19,7 +19,6 @@ import { initProgrammeSlider } from './typescript/sliders/slider-programme';
 import { initTestimonialSlider } from './typescript/sliders/slider-testimonial';
 import { initTimelineSlider } from './typescript/sliders/slider-timeline';
 import { loadFinsweetAttributes } from './utils/finsweet';
-import { launchMarkerSDK } from './utils/marker';
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
@@ -31,24 +30,22 @@ window.Webflow.push(() => {
   initDesktopDropdownHover();
   initNavbar();
   initAccordion();
+  initInfoDropdown();
+  initShareLinks();
 
-  if (window.location.href.includes('webflow.io')) {
-    launchMarkerSDK();
-    initBgParallax();
-    initHpAnimation();
-    initStepsReveal();
-    initIndustriesSlider();
-    initCasesSlider();
-    initHpStepsSlider();
-    initProgrammeSlider();
-    initBlogRelatedSlider();
-    initTimelineSlider();
-    initStepLines();
-    initStepLegendFloat();
-    initJoinsUsFloat();
-    initStackedSections();
-    initTestimonialSlider();
-    initInfoDropdown();
-    initShareLinks();
-  }
+  initBgParallax();
+  initHpAnimation();
+  initStepsReveal();
+  initStepLines();
+  initStepLegendFloat();
+  initJoinsUsFloat();
+  initStackedSections();
+
+  initIndustriesSlider();
+  initCasesSlider();
+  initHpStepsSlider();
+  initProgrammeSlider();
+  initBlogRelatedSlider();
+  initTimelineSlider();
+  initTestimonialSlider();
 });

@@ -1,8 +1,9 @@
 {
   "name": "@studiorelief/cyberwatch",
   "version": "1.0.0",
-  "description": "Cyberwatch, the sovereign platform dedicated to continuous vulnerability and compliance management. Identify your assets, prioritize exploitable risks, and remediate them faster, while maintaining control over your data across your IT, operational, cloud, and sensitive environments.",
-  "homepage": "https://github.com/ET33-StudioRelief/cyberwatch#readme",
+  "private": true,
+  "description": "Custom TypeScript, CSS and animations for the Cyberwatch Webflow site, served from jsDelivr.",
+  "homepage": "https://github.com/ET33-StudioRelief/Cyberwatch#readme",
   "license": "ISC",
   "keywords": [],
   "author": {
@@ -11,17 +12,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/finsweet/developer-starter.git"
+    "url": "git+https://github.com/ET33-StudioRelief/Cyberwatch.git"
   },
   "bugs": {
-    "url": "https://github.com/finsweet/developer-starter/issues"
+    "url": "https://github.com/ET33-StudioRelief/Cyberwatch/issues"
   },
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development node ./bin/build.js",
     "build": "cross-env NODE_ENV=production node ./bin/build.js",
@@ -58,9 +54,8 @@
     "swiper": "^14.0.5"
   },
   "engines": {
+    "node": ">=20",
     "pnpm": ">=10"
   },
-  "publishConfig": {
-    "provenance": true
-  }
+  "packageManager": "pnpm@10.12.1"
 }

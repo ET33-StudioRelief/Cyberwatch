@@ -3,8 +3,8 @@
 }
 
 .button[data-wf--button-general--variant='base']:hover > .button_icon-wrp {
-  filter: drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 5px #00d4ff) drop-shadow(0 0 2px #00d4ff)
-    blur(0.25px);
+  filter: drop-shadow(0 0 10px var(--button-glow)) drop-shadow(0 0 5px var(--button-glow))
+    drop-shadow(0 0 2px var(--button-glow)) blur(0.25px);
 }
 
 .button[data-wf--button-general--variant='tertiary'] .button_icon-wrp {
@@ -47,10 +47,10 @@
     background: conic-gradient(
       from var(--glow-angle, 0deg),
       transparent 0deg,
-      #00d4ff 30deg,
+      var(--button-glow) 30deg,
       transparent 60deg,
       transparent 180deg,
-      #00d4ff 210deg,
+      var(--button-glow) 210deg,
       transparent 240deg,
       transparent 360deg
     );
@@ -62,8 +62,9 @@
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     mask-composite: exclude;
-    filter: blur(0.25px) drop-shadow(0 0 2px #00d4ff) drop-shadow(0 0 5px #00d4ff)
-      drop-shadow(0 0 10px #00d4ff) drop-shadow(0 0 20px #00d4ff);
+    filter: blur(0.25px) drop-shadow(0 0 2px var(--button-glow))
+      drop-shadow(0 0 5px var(--button-glow)) drop-shadow(0 0 10px var(--button-glow))
+      drop-shadow(0 0 20px var(--button-glow));
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;

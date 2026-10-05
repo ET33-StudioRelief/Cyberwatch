@@ -30,7 +30,11 @@
   pointer-events: none;
   border-radius: 53.625rem;
   opacity: 0.25;
-  background: radial-gradient(50% 50% at 50% 50%, #1089ff 0%, rgba(16, 137, 255, 0.25) 100%);
+  background: radial-gradient(
+    50% 50% at 50% 50%,
+    var(--brand--light-blue) 0%,
+    color-mix(in srgb, var(--brand--light-blue) 25%, transparent) 100%
+  );
   filter: blur(100px);
   width: 53.625rem;
   height: 53.625rem;

@@ -26,8 +26,8 @@
   border-color: transparent;
   background: linear-gradient(
     180deg,
-    #1089ff 0%,
-    rgba(16, 137, 255, 0.5) 75%,
-    rgba(16, 137, 255, 0) 100%
+    var(--brand--light-blue) 0%,
+    var(--light-blue-a50) 75%,
+    var(--light-blue-a0) 100%
   );
 }

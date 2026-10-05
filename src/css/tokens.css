@@ -1,0 +1,11 @@
+/* ─── Colour tokens ───
+   Brand colours are Webflow variables (Designer → Variables panel), so a
+   palette change made in Webflow carries over to this stylesheet too. Only
+   the translucent steps of the light blue, used by the gradient borders, and
+   the button glow colour, which is not part of the Webflow palette, are
+   defined here. */
+:root {
+  --light-blue-a50: color-mix(in srgb, var(--brand--light-blue) 50%, transparent);
+  --light-blue-a0: color-mix(in srgb, var(--brand--light-blue) 0%, transparent);
+  --button-glow: #00d4ff;
+}

@@ -4,7 +4,7 @@ Custom TypeScript, CSS and animations for the [Cyberwatch](https://www.cyberwatc
 
 The Webflow Designer owns the markup, the content and the visual design. This repository owns everything Webflow cannot express on its own: scroll-driven animations, sliders, the navbar behaviour, accordions and a few CSS rules that are easier to maintain in code than in the Designer. The TypeScript and CSS sources here are compiled into a single JavaScript file and a single CSS file, which are then loaded by the Webflow site from a CDN.
 
-**Nothing in this repository is deployed automatically.** Publishing a change is a deliberate three-step action: build, commit, push. See [Deploying to production](#deploying-to-production).
+**Nothing in this repository is deployed automatically.** The live site loads a pinned release tag, so a change reaches production only once it is merged, tagged, and the new tag is referenced in Webflow. See [Releasing to production](#releasing-to-production).
 
 ## Contents
 
@@ -12,7 +12,7 @@ The Webflow Designer owns the markup, the content and the visual design. This re
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Local development](#local-development)
-- [Deploying to production](#deploying-to-production)
+- [Releasing to production](#releasing-to-production)
 - [Webflow integration](#webflow-integration)
   - [Critical CSS lives in Webflow, not here](#critical-css-lives-in-webflow-not-here)
 - [Project structure](#project-structure)
@@ -62,87 +62,89 @@ Start the development server:
 pnpm dev
 ```
 
-This compiles the project, serves it on `http://localhost:3000`, watches your files and rebuilds on every save. Live reload is enabled, so the Webflow page you are working on refreshes by itself after each rebuild.
+This compiles the project into the gitignored `.dev/` folder, serves it on `http://localhost:3000`, watches your files and rebuilds on every save. Live reload is enabled, so the Webflow page you are working on refreshes by itself after each rebuild. The development build never touches `dist/`, so it cannot be committed by mistake.
 
-To see your local code running against the real site, open the Webflow Designer, go to **Project Settings → Custom Code → Footer Code**, and temporarily replace the production tags with the localhost ones:
-
-```html
-<link href="http://localhost:3000/index.css" rel="stylesheet" type="text/css" />
-<script defer src="http://localhost:3000/index.js"></script>
-```
-
-Then publish to the `*.webflow.io` staging domain and work there. Remember to restore the production tags before publishing to the live domain, otherwise visitors will get a site whose scripts point at a server running on your laptop.
+To see your local code running against the real site, open any page of the `*.webflow.io` staging domain with `?dev` in the URL, for example `https://sr-cyberwatch.webflow.io/?dev`. The [loader script](#webflow-integration) then loads the bundle from `localhost:3000` instead of the CDN, for the rest of the browser tab's session. Open a page with `?dev=0` to switch back. Nothing needs to change in Webflow, and other people browsing the staging site are not affected.
 
 Before committing, make sure the code is clean:
 
 ```bash
 pnpm check   # TypeScript type errors
 pnpm lint    # ESLint + Prettier
+pnpm build   # production build into dist/, which must be committed with the sources
 ```
 
-## Deploying to production
+## Releasing to production
 
-jsDelivr serves the compiled files directly from this GitHub repository, so deploying means pushing a fresh build to `master`:
+jsDelivr serves the compiled files directly from this GitHub repository. The staging domain follows `master`; the live domain loads a **pinned release tag**, so nothing reaches production by accident.
 
-```bash
-pnpm build                                  # writes dist/index.js and dist/index.css
-git add dist src                            # the build output must be committed
-git commit -m "describe the change"
-git push origin master
-```
+1. Work on a branch, run `pnpm build` and commit `dist/` together with the sources. CI fails the pull request if `dist/` does not match the sources (see [Continuous integration](#continuous-integration)).
+2. Merge the pull request into `master`. The staging site picks it up from `@master`.
+3. Tag the merge commit with the next version and push the tag:
 
-The CDN picks the change up within a few minutes. Two things to know about caching:
+   ```bash
+   git switch master && git pull
+   git tag v1.0.15
+   git push origin v1.0.15
+   ```
 
-jsDelivr caches branch URLs (`@master`) for **up to 12 hours**. If you need the change to be visible immediately, purge the cache by opening these two URLs in a browser:
+4. In Webflow, set `VERSION` to the new tag in the [loader script](#webflow-integration), then publish the site to the live domain.
+
+To roll back, set `VERSION` back to the previous tag and publish again. Tagged URLs are immutable and cached permanently by jsDelivr, so a rollback is instant.
+
+jsDelivr caches branch URLs (`@master`) for **up to 12 hours**, which only affects the staging domain. To see a merge on staging immediately, purge the cache by opening these two URLs:
 
 ```
 https://purge.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@master/dist/index.js
 https://purge.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@master/dist/index.css
 ```
 
-Because `@master` always resolves to the latest commit, the live site has no version pinning: a bad push reaches production as soon as the cache expires. For a safer workflow, tag each release and point Webflow at the tag instead (see the next section) — tagged URLs are immutable and cached permanently.
-
-> **The GitHub repository must stay public.** jsDelivr cannot read private repositories. If the repository is ever made private, the live site loses its JavaScript and CSS entirely.
+> **The GitHub repository must stay public.** jsDelivr cannot read private repositories. If the repository is ever made private, or moved to another GitHub account, every jsDelivr URL changes or breaks and the site loses its JavaScript and CSS.
 
 ## Webflow integration
 
-The tags below go in the Webflow Designer, under **Project Settings → Custom Code → Footer Code**, so that they load once for the whole site.
+The bundle is loaded by a small loader script in the Webflow Designer, under **Project Settings → Custom Code → Head Code**, so that it loads once for the whole site and the stylesheet starts downloading as early as possible. It picks the source of the files from the domain:
 
-Following the latest commit on `master`:
-
-```html
-<link
-  href="https://cdn.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@master/dist/index.css"
-  rel="stylesheet"
-  type="text/css"
-/>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@master/dist/index.js"
-></script>
-```
-
-Pinned to a specific release, which is the recommended option once the site is live:
+| Domain                            | Loads                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| Live domain                       | The pinned release tag set in `VERSION`                                        |
+| `*.webflow.io` (staging)          | The latest commit on `master`                                                  |
+| `*.webflow.io` opened with `?dev` | `http://localhost:3000`, for the rest of the tab's session (`?dev=0` to leave) |
 
 ```html
-<link
-  href="https://cdn.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@v1.1.0/dist/index.css"
-  rel="stylesheet"
-  type="text/css"
-/>
-<script
-  defer
-  src="https://cdn.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@v1.1.0/dist/index.js"
-></script>
+<script>
+  (function () {
+    var VERSION = 'v1.0.15'; // release tag served on the live domain
+    var CDN = 'https://cdn.jsdelivr.net/gh/ET33-StudioRelief/Cyberwatch@';
+
+    var params = new URLSearchParams(location.search);
+    try {
+      if (params.get('dev') === '0') sessionStorage.removeItem('cw-dev');
+      else if (params.has('dev')) sessionStorage.setItem('cw-dev', '1');
+    } catch (e) {}
+
+    var staging = location.hostname.endsWith('.webflow.io');
+    var dev = false;
+    try {
+      dev = staging && sessionStorage.getItem('cw-dev') === '1';
+    } catch (e) {}
+
+    var base = dev ? 'http://localhost:3000' : CDN + (staging ? 'master' : VERSION) + '/dist';
+    if (dev) console.info('[cyberwatch] loading the local development build');
+
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = base + '/index.css';
+    document.head.appendChild(link);
+
+    var script = document.createElement('script');
+    script.src = base + '/index.js';
+    document.head.appendChild(script);
+  })();
+</script>
 ```
 
-To publish a pinned release, tag the commit you just pushed and bump the number in the Webflow tags:
-
-```bash
-git tag v1.1.0 && git push origin v1.1.0
-```
-
-The script runs inside `window.Webflow.push()`, which means it waits for Webflow's own initialisation to finish before touching the DOM. Keep the `defer` attribute and keep the tags in the footer; moving them to the head will break that ordering.
+A dynamically inserted script runs as soon as it has downloaded, possibly before the page is parsed. That is safe here: every feature is started inside `window.Webflow.push()`, which waits for Webflow's own initialisation, and the only code running earlier (the newsletter submit interception) only listens on `window`. The injected stylesheet does not block rendering, though, so rules that must apply on the very first frame belong in the critical CSS described below.
 
 [Finsweet Attributes](https://finsweet.com/attributes) (the `List` and `Social Share` modules) is loaded at runtime by `src/utils/finsweet.ts`. Do **not** add the Finsweet script tag in Webflow as well, or it will be loaded twice.
 
@@ -186,18 +188,19 @@ This CSS is deliberately **not mirrored in this repository**, so that there is a
 
 ```
 bin/build.js              esbuild configuration (entry points, dev server, live reload)
-dist/                     compiled output — committed, served by jsDelivr, never edit by hand
+dist/                     production build — committed, served by jsDelivr, never edit by hand
+.dev/                     development build served by `pnpm dev` — gitignored
 src/
   index.ts                single entry point: imports the CSS and calls every init function
   index.css               imports every file in src/css/
-  css/                    one stylesheet per component or page section
+  css/                    one stylesheet per component or page section, plus tokens.css (colours)
   typescript/
     animations/           scroll-driven GSAP animations
     components/           interactive UI (navbar, accordion, dropdown, buttons, share links, localized anchors)
     forms/                HubSpot contact form embed and newsletter form submission
     sliders/              one Swiper instance per slider
-  utils/                  shared helpers (GSAP and Swiper setup, breakpoints, script loader)
-tests/                    Playwright tests
+  utils/                  shared helpers (GSAP and Swiper setup, breakpoints, script loader,
+                          accordion animation)
 ```
 
 Adding a feature follows the same three steps every time: create the module in the right `src/typescript/` subfolder and export an `init*` function that returns early when its element is missing; add its stylesheet to `src/css/` and import it from `src/index.css`; call the function from `src/index.ts`.
@@ -208,17 +211,17 @@ This is the contract between the code and the Webflow Designer. Renaming a class
 
 ### Components
 
-| Module                     | Required in Webflow                                                                                                 | Behaviour                                                                                                                                                                                             |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `initNavbar`               | `[trigger="navbar"]` on the navbar wrapper                                                                          | Hides the navbar on scroll down, reveals it on scroll up. Adds `.scrolled` past 80px for the opaque background. Stays visible during anchor-link jumps.                                               |
-| `initNavMenu`              | `[data-nav]` on the wrapper, `[data-nav-menu]` on the menu, `[data-nav-toggle]` on the burger                       | Mobile and tablet menu below 1350px. Toggles `.is-open`, locks page scroll via `.nav-scroll-lock` on `<html>`, closes on outside click, Escape, or resize to desktop.                                 |
-| `initDesktopDropdownHover` | Native Webflow dropdowns inside `[trigger="navbar"]`                                                                | Opens dropdowns on hover above 1350px only. Add `.nav_dropdown-list` to a dropdown list to have it centred under its toggle instead of Webflow's full-width default.                                  |
-| `initAccordion`            | `.accordion-component` containing `.accordion_show-content` (the trigger) and `.accordion_hide-content` (the panel) | Independent open/close per item, animated height. Add `data-accordion-default="open"` to expand an item on load. Compensates the scroll position so following ScrollTriggers do not jump.             |
-| `initInfoDropdown`         | `.faq-dropdown_component` containing `.faq-dropdown_hidden-content`, all inside `.faq_list`                         | FAQ accordion where opening one item closes its siblings.                                                                                                                                             |
-| `initGlowOrbit`            | `.button` with `data-wf--button-general--variant="base"`                                                            | Rotates the conic-gradient glow ring around the button border while hovered, by driving the `--glow-angle` custom property used in `button.css`.                                                      |
-| `initFooterGlow`           | `.footer_glow-bg` positioned inside `.footer_btm-wrp`                                                               | Endless slow random drift of the footer light halo.                                                                                                                                                   |
-| `initShareLinks`           | `[fs-socialshare-element="url"]` and `[data-share="copy-content"]`, article body as `.text-rich-text.is-article`    | Copy-to-clipboard for the article URL and the article text. Adds `.is-copied` for 1.5s and exposes the confirmation label as `data-copied-label` for the CSS. LinkedIn and X are handled by Finsweet. |
-| `initLocalizedAnchors`     | The French section IDs listed in `localized-anchors.ts`, on the `/en` and `/es` pages                               | Webflow Localization cannot translate element IDs. Renames them to the localized slug, rewrites the matching `#` links, and scrolls to the target when the page opens with a hash.                    |
+| Module                     | Required in Webflow                                                                                                                                    | Behaviour                                                                                                                                                                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `initNavbar`               | `[trigger="navbar"]` on the navbar wrapper                                                                                                             | Hides the navbar on scroll down, reveals it on scroll up. Adds `.scrolled` past 80px for the opaque background. Stays visible during anchor-link jumps.                                                                                                      |
+| `initNavMenu`              | `[data-nav]` on the wrapper, `[data-nav-menu]` on the menu, `[data-nav-toggle]` on the burger                                                          | Mobile and tablet menu below 1350px. Toggles `.is-open`, locks page scroll via `.nav-scroll-lock` on `<html>`, closes on outside click, Escape, or resize to desktop.                                                                                        |
+| `initDesktopDropdownHover` | Native Webflow dropdowns inside `[trigger="navbar"]`                                                                                                   | Opens dropdowns on hover above 1350px only. Add `.nav_dropdown-list` to a dropdown list to have it centred under its toggle instead of Webflow's full-width default.                                                                                         |
+| `initAccordion`            | `.accordion-component` containing `.accordion_show-content` (the trigger) and `.accordion_hide-content` (the panel)                                    | Independent open/close per item, animated height. Add `data-accordion-default="open"` to expand an item on load. Compensates the scroll position so following ScrollTriggers do not jump. Triggers get button semantics and keyboard support (Enter, Space). |
+| `initInfoDropdown`         | `.faq-dropdown_component` containing `.faq-dropdown_show-content` (the trigger) and `.faq-dropdown_hidden-content` (the panel), all inside `.faq_list` | FAQ accordion where opening one item closes the others of the same list. Same keyboard support as the accordion.                                                                                                                                             |
+| `initGlowOrbit`            | `.button` with `data-wf--button-general--variant="base"`                                                                                               | Rotates the conic-gradient glow ring around the button border while hovered, by driving the `--glow-angle` custom property used in `button.css`.                                                                                                             |
+| `initFooterGlow`           | `.footer_glow-bg` positioned inside `.footer_btm-wrp`                                                                                                  | Endless slow random drift of the footer light halo.                                                                                                                                                                                                          |
+| `initShareLinks`           | `[fs-socialshare-element="url"]` and `[data-share="copy-content"]`, article body as `.text-rich-text.is-article`                                       | Copy-to-clipboard for the article URL and the article text. Adds `.is-copied` for 1.5s and exposes the confirmation label as `data-copied-label` for the CSS. LinkedIn and X are handled by Finsweet.                                                        |
+| `initLocalizedAnchors`     | The French section IDs listed in `localized-anchors.ts`, on the `/en` and `/es` pages                                                                  | Webflow Localization cannot translate element IDs. Renames them to the localized slug, rewrites the matching `#` links, and scrolls to the target when the page opens with a hash.                                                                           |
 
 ### Forms
 
@@ -253,11 +256,17 @@ Every slider follows the same pattern: a container element, plus three optional 
 | `initTimelineSlider`    | `.timeline_slider`            | `timeline-prev-slide`, `timeline-next-slide`, `timeline-pagination`             | —                                                                       |
 | `initTestimonialSlider` | `.testimonial_layout`         | `testimonial-prev-slide`, `testimonial-next-slide`, `testimonial-pagination`    | Centred slides, starts on the second slide when there are more than two |
 
-Two Webflow quirks are worked around in these modules, which is worth knowing before editing them. A CMS Collection List inserts a `.w-dyn-item` wrapper, and a component slot inserts a `.card-slot` wrapper, between `.swiper-wrapper` and the actual slide. Swiper only recognises `.swiper-slide` elements that are _direct_ children of the wrapper, so the code moves the `swiper-slide` class up onto that intermediate element. Keep this in mind if slides ever stop sliding after a markup change in the Designer.
+Every slider is created with `createSlider()` from `src/utils/swiper.ts`, which applies the shared defaults (auto width, 24px gap, rewind, grab cursor) and wires the three controls. To add a slider, give its controls `trigger` attributes following the same naming and call `createSlider(container, '<name>', scope, overrides)`.
+
+One Webflow quirk is worth knowing before editing these modules. A CMS Collection List inserts a `.w-dyn-item` wrapper, and a component slot inserts a `.card-slot` wrapper, between `.swiper-wrapper` and the actual slide. Swiper only recognises `.swiper-slide` elements that are _direct_ children of the wrapper, so `promoteSlides()` moves the `swiper-slide` class up onto that intermediate element. Keep this in mind if slides ever stop sliding after a markup change in the Designer.
 
 ## Conventions
 
-**Breakpoints.** `src/utils/breakpoint.ts` exports the Webflow breakpoints (`MOBILE_QUERY` ≤ 767px, `TABLET_QUERY` ≤ 991px, `DESKTOP_QUERY` ≥ 992px). Use them instead of hardcoding widths, so the code and the Designer stay in sync. The navigation menu is the one exception: it switches at 1350px, a custom breakpoint declared in both `navbar.ts` and `navbar.css`.
+**Breakpoints.** `src/utils/breakpoint.ts` exports the Webflow breakpoints (`MOBILE_QUERY` ≤ 767px, `TABLET_QUERY` ≤ 991px, `DESKTOP_QUERY` ≥ 992px, `ABOVE_MOBILE_PORTRAIT_QUERY` ≥ 480px). Use them instead of hardcoding widths, so the code and the Designer stay in sync. The navigation also has a custom 1350px breakpoint (`NAV_DESKTOP_QUERY` / `NAV_MOBILE_QUERY`), which must match the 1350px media queries of the Webflow critical CSS. Some stylesheets add intermediate layout fixes between 992px and 1300px for content-specific breakpoints that Webflow does not offer.
+
+**Colours.** Use the Webflow brand variables (`var(--brand--light-blue)`, `var(--brand--dark-blue)`, …) rather than hex values, so a palette change in the Designer applies everywhere. The few colours that are not Webflow variables are defined in `src/css/tokens.css`.
+
+**Webflow attributes.** Elements are targeted by Webflow class names, by `data-*` attributes, or by a `trigger="…"` custom attribute (navbar, slider controls, a few hover effects). `trigger` is a historical convention of this project; prefer `data-*` attributes for new features.
 
 **GSAP.** Always import from `src/utils/gsap.ts`, never from `gsap` directly. That module registers `ScrollTrigger` once and sets the project-wide defaults (`power2.out`, 0.6s). Importing GSAP directly bypasses both.
 
@@ -269,29 +278,28 @@ Two Webflow quirks are worked around in these modules, which is worth knowing be
 
 ## Available scripts
 
-| Command         | Purpose                                                                   |
-| --------------- | ------------------------------------------------------------------------- |
-| `pnpm dev`      | Build in watch mode and serve on `http://localhost:3000` with live reload |
-| `pnpm build`    | Production build (minified, no sourcemaps) into `dist/`                   |
-| `pnpm check`    | TypeScript type checking, no output emitted                               |
-| `pnpm lint`     | ESLint and Prettier in check mode                                         |
-| `pnpm lint:fix` | Fix every auto-fixable ESLint issue                                       |
-| `pnpm format`   | Reformat the whole codebase with Prettier                                 |
-| `pnpm test`     | Run the Playwright tests                                                  |
+| Command         | Purpose                                                                                |
+| --------------- | -------------------------------------------------------------------------------------- |
+| `pnpm dev`      | Build into `.dev/` in watch mode and serve on `http://localhost:3000` with live reload |
+| `pnpm build`    | Production build (minified, no sourcemaps) into `dist/`                                |
+| `pnpm check`    | TypeScript type checking, no output emitted                                            |
+| `pnpm lint`     | ESLint and Prettier in check mode                                                      |
+| `pnpm lint:fix` | Fix every auto-fixable ESLint issue                                                    |
+| `pnpm format`   | Reformat the whole codebase with Prettier                                              |
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs linting and type checking on every pull request, using Finsweet's shared workflows.
+`.github/workflows/ci.yml` runs on every pull request and on every push to `master`. It installs the dependencies, runs `pnpm lint` and `pnpm check`, then rebuilds the project and fails if the result differs from the committed `dist/` files. That last step catches the two classic mistakes of this setup: forgetting to run `pnpm build` before committing, and committing a development build.
 
-`.github/workflows/release.yml` and the `.changeset/` folder are leftovers from the Finsweet Developer Starter template. They are configured to publish this package to npm, which has never been done and is not needed with jsDelivr serving from GitHub. They are harmless, but you can safely delete both if you want to simplify the repository.
-
-The `tests/` folder likewise still contains the template's demo test, which checks the Playwright documentation website and says nothing about this project. Replace it with real tests or remove it along with the `Tests` job in the CI workflow.
+There are no automated tests: the code is a set of DOM behaviours tied to the Webflow markup, which is checked by hand on the staging domain before each release.
 
 ## Troubleshooting
 
 **An animation or slider does nothing.** The element it looks for is missing or has been renamed. Check the [module reference](#module-reference) for the exact selector, then confirm it exists on the published page with `document.querySelector('…')` in the browser console. Also confirm the animation is not simply disabled by the operating system's reduced-motion setting.
 
-**The site does not reflect your last push.** Either the build output was not committed (run `pnpm build` and commit `dist/`), or jsDelivr is still serving a cached copy (purge it as described in [Deploying to production](#deploying-to-production)). Check the URL actually loaded in the browser's Network tab before looking any further.
+**The staging site has no JavaScript or CSS, or shows an old version.** A tab that was opened with `?dev` keeps loading `localhost:3000`, which only works while `pnpm dev` runs on your machine: open any page with `?dev=0`. Otherwise jsDelivr is still serving a cached `@master` (purge it as described in [Releasing to production](#releasing-to-production)).
+
+**The live site does not reflect your last merge.** The live domain only loads the tag set in `VERSION`: check that a new tag was pushed and that the loader in Webflow points at it, then that the site was published. If the change is also missing on staging, the build output was probably not committed (CI should have caught it). Check the URL actually loaded in the browser's Network tab before looking any further.
 
 **Slides stop sliding after a Designer change.** The markup level between `.swiper-wrapper` and the slides has changed. See the note at the end of the [sliders section](#sliders).
 

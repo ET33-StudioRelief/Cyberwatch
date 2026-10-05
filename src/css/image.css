@@ -2,7 +2,7 @@
   background: radial-gradient(
     1.47% 50.56% at 54.49% 0%,
     rgba(255, 255, 255, 0) 0%,
-    rgba(16, 137, 255, 0.15) 100%
+    color-mix(in srgb, var(--brand--light-blue) 15%, transparent) 100%
   );
 }
 .asset-slot {

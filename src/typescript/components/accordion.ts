@@ -1,91 +1,40 @@
+import {
+  collapse,
+  type Collapsible,
+  expand,
+  isOpen,
+  setupCollapsible,
+} from '../../utils/collapsible';
 import { ScrollTrigger } from '../../utils/gsap';
 
+const ACCORDION_SELECTOR = '.accordion-component';
+const ACCORDION_TRIGGER = '.accordion_show-content';
+const ACCORDION_CONTENT = '.accordion_hide-content';
+const ACCORDION_DEFAULT_ATTRIBUTE = 'data-accordion-default';
+
 /**
- * Ouvrir/fermer un accordéon change la hauteur de son conteneur, ce qui
- * décale dans le document tout ce qui suit (les points de déclenchement des
- * animations suivantes). Sans compensation, `ScrollTrigger.refresh()`
- * recalcule ces positions alors que le scroll de l'utilisateur n'a pas
- * bougé, ce qui fait brusquement « sauter » ces animations. On décale la
- * position de scroll du même delta que le changement de hauteur pour que
- * rien ne bouge à l'écran.
+ * Opening or closing an accordion changes the page height, which shifts every
+ * ScrollTrigger start/end point further down the page. `ScrollTrigger.refresh()`
+ * recomputes those points, but since the user's scroll position has not moved,
+ * the animations below would visibly jump. To prevent it, the scroll position
+ * is shifted by the same delta as the height change, so nothing moves on screen.
  *
- * Exception : dans une `.section_step` empilée (voir stackedSections.ts),
- * la step qui grandit anime son propre ScrollTrigger de révélation de façon
- * relative à sa propre hauteur (start = son sommet, end = son sommet +
- * hauteur en trop). Ce ScrollTrigger-là n'a pas décalé, lui : compenser le
- * scroll ferait avancer artificiellement sa progression à chaque accordéon
- * ouvert, la traduisant plus haut que nécessaire et découvrant la step
- * précédente. Pour ces steps-là, on ne touche donc pas au scroll.
+ * Exception: inside a stacked `.section_step` (see stackedSections.ts), the
+ * growing step drives its own reveal ScrollTrigger relative to its own height
+ * (start = its top, end = its top + its overflow). That trigger did not shift,
+ * so compensating the scroll would artificially advance its progress on every
+ * opened accordion, translating the step too far up and revealing the previous
+ * one. The scroll position is left untouched for those steps.
  */
-const refreshScrollTriggersAfterResize = (heightBefore: number, container: HTMLElement): void => {
-  if (!container.closest('.section_step')) {
+function refreshScrollTriggers(heightBefore: number, item: HTMLElement): void {
+  if (!item.closest('.section_step')) {
     const delta = document.documentElement.scrollHeight - heightBefore;
     if (delta !== 0) {
       window.scrollTo({ top: window.scrollY + delta, left: window.scrollX });
     }
   }
   ScrollTrigger.refresh();
-};
-
-const openAccordion = (container: HTMLElement, contentSelector: string): void => {
-  const content = container.querySelector<HTMLElement>(contentSelector);
-  if (!content) return;
-
-  const heightBefore = document.documentElement.scrollHeight;
-
-  container.classList.add('is-open');
-
-  requestAnimationFrame(() => {
-    content.style.height = `${content.scrollHeight}px`;
-  });
-
-  const onTransitionEnd = (event: TransitionEvent): void => {
-    if (event.propertyName !== 'height') return;
-    if (container.classList.contains('is-open')) {
-      content.style.height = 'auto';
-    }
-    content.removeEventListener('transitionend', onTransitionEnd);
-    refreshScrollTriggersAfterResize(heightBefore, container);
-  };
-
-  content.addEventListener('transitionend', onTransitionEnd);
-};
-
-const closeAccordion = (container: HTMLElement, contentSelector: string): void => {
-  const content = container.querySelector<HTMLElement>(contentSelector);
-  if (!content) return;
-
-  const heightBefore = document.documentElement.scrollHeight;
-
-  content.style.height = `${content.scrollHeight}px`;
-
-  requestAnimationFrame(() => {
-    content.style.height = '0px';
-    container.classList.remove('is-open');
-  });
-
-  const onTransitionEnd = (event: TransitionEvent): void => {
-    if (event.propertyName !== 'height') return;
-    content.removeEventListener('transitionend', onTransitionEnd);
-    refreshScrollTriggersAfterResize(heightBefore, container);
-  };
-
-  content.addEventListener('transitionend', onTransitionEnd);
-};
-
-const toggleAccordion = (container: HTMLElement, contentSelector: string): void => {
-  if (container.classList.contains('is-open')) {
-    closeAccordion(container, contentSelector);
-    return;
-  }
-
-  openAccordion(container, contentSelector);
-};
-
-const ACCORDION_SELECTOR = '.accordion-component';
-const ACCORDION_TRIGGER = '.accordion_show-content';
-const ACCORDION_CONTENT = '.accordion_hide-content';
-const ACCORDION_DEFAULT_ATTRIBUTE = 'data-accordion-default';
+}
 
 /**
  * Accordion for `.accordion-component` items. Each item opens/closes
@@ -98,16 +47,24 @@ export function initAccordion(): void {
   const accordions = document.querySelectorAll<HTMLElement>(ACCORDION_SELECTOR);
   if (!accordions.length) return;
 
-  accordions.forEach((accordion) => {
-    const trigger = accordion.querySelector<HTMLElement>(ACCORDION_TRIGGER);
-    if (!trigger) return;
+  accordions.forEach((item) => {
+    const trigger = item.querySelector<HTMLElement>(ACCORDION_TRIGGER);
+    const content = item.querySelector<HTMLElement>(ACCORDION_CONTENT);
+    if (!trigger || !content) return;
 
-    if (accordion.getAttribute(ACCORDION_DEFAULT_ATTRIBUTE) === 'open') {
-      const content = accordion.querySelector<HTMLElement>(ACCORDION_CONTENT);
-      if (content) content.style.height = 'auto';
-      accordion.classList.add('is-open');
-    }
+    const collapsible: Collapsible = { item, trigger, content };
 
-    trigger.addEventListener('click', () => toggleAccordion(accordion, ACCORDION_CONTENT));
+    const toggle = (): void => {
+      const heightBefore = document.documentElement.scrollHeight;
+      const onSettled = () => refreshScrollTriggers(heightBefore, item);
+      if (isOpen(collapsible)) collapse(collapsible, onSettled);
+      else expand(collapsible, onSettled);
+    };
+
+    setupCollapsible(
+      collapsible,
+      toggle,
+      item.getAttribute(ACCORDION_DEFAULT_ATTRIBUTE) === 'open'
+    );
   });
 }

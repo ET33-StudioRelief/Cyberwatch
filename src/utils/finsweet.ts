@@ -1,6 +1,9 @@
 import { loadScript } from './loadScript';
 
-/** Charge Finsweet Attributes (modules List + Social Share). */
+/**
+ * Loads Finsweet Attributes v2 with the List and Social Share modules. Do not
+ * also add the Finsweet script tag in Webflow, or it would load twice.
+ */
 export function loadFinsweetAttributes() {
   return loadScript('https://cdn.jsdelivr.net/npm/@finsweet/attributes@2/attributes.js', {
     async: true,

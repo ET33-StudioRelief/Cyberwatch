@@ -24,4 +24,5 @@ typings/
 # dotenv environment variables file
 .env
 
-# Production files
+# Development build output (pnpm dev)
+.dev/

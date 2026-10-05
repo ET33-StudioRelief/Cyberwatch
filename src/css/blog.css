@@ -2,7 +2,11 @@
   border-top-left-radius: var(--_sizes---border-radius--large);
   border-top-right-radius: var(--_sizes---border-radius--large);
   background-color: var(--brand--white);
-  background-image: radial-gradient(circle, rgba(16, 137, 255, 0.05), rgba(16, 137, 255, 0.1));
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--brand--light-blue) 5%, transparent),
+    color-mix(in srgb, var(--brand--light-blue) 10%, transparent)
+  );
 }
 @media screen and (min-width: 992px) and (max-width: 1300px) {
   .hero-blog-post_row {

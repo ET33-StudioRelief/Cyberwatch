@@ -1,8 +1,6 @@
-import { TABLET_QUERY } from '../../utils/breakpoint';
+import { NAV_DESKTOP_QUERY, TABLET_QUERY } from '../../utils/breakpoint';
 import { gsap, ScrollTrigger } from '../../utils/gsap';
 
-/** Matches the `.navbar_menu` desktop breakpoint set in the Webflow `global-style-custom` embed. */
-const NAV_MENU_DESKTOP_QUERY = '(min-width: 1350px)';
 const SCROLL_LOCK_CLASS = 'nav-scroll-lock';
 const DROPDOWN_VIEWPORT_MARGIN = 16;
 /** Dropdown lists carrying this class get anchored to their toggle via JS instead of Webflow's default full-width positioning (see positionDropdownList). */
@@ -45,13 +43,16 @@ const resetDropdownListPosition = (list: HTMLElement): void => {
  * Hides the navbar on scroll down (slide up) and reveals it on scroll up (slide down).
  * Toggles `.scrolled` for a readable background past the hero (see navbar.css).
  *
+ * Under reduced motion the navbar stays put, but `.scrolled` is still toggled:
+ * without it the transparent navbar would sit unreadable on top of the content.
+ *
  * @param selector - CSS selector targeting the navbar wrapper.
  */
 export function initNavbar(selector = '[trigger="navbar"]'): void {
   const navbar = document.querySelector<HTMLElement>(selector);
   if (!navbar) return;
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let isHidden = false;
   let lastScrollY = window.scrollY;
@@ -60,7 +61,7 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
 
   const yTo = gsap.quickTo(navbar, 'yPercent', {
     duration: 0.3,
-    ease: 'easeInOut',
+    ease: 'power1.inOut',
     overwrite: 'auto',
   });
 
@@ -146,6 +147,7 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
       const delta = scrollY - lastScrollY;
 
       updateScrolled(scrollY);
+      if (reduceMotion) return;
 
       if (isAnchorScrolling) {
         window.clearTimeout(settleTimer);
@@ -189,7 +191,7 @@ export function initNavMenu(selector = '[data-nav]'): void {
   const toggle = nav.querySelector<HTMLElement>('[data-nav-toggle]');
   if (!menu || !toggle) return;
 
-  const desktop = window.matchMedia(NAV_MENU_DESKTOP_QUERY);
+  const desktop = window.matchMedia(NAV_DESKTOP_QUERY);
 
   /**
    * Fills the viewport space below the menu's top edge, so it looks full-screen even
@@ -243,7 +245,7 @@ export function initDesktopDropdownHover(selector = '[trigger="navbar"]'): void 
   const navbar = document.querySelector<HTMLElement>(selector);
   if (!navbar) return;
 
-  const desktop = window.matchMedia(NAV_MENU_DESKTOP_QUERY);
+  const desktop = window.matchMedia(NAV_DESKTOP_QUERY);
 
   navbar.querySelectorAll<HTMLElement>('.w-dropdown').forEach((dropdown) => {
     const toggle = dropdown.querySelector<HTMLElement>('.w-dropdown-toggle');

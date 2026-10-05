@@ -175,9 +175,15 @@ export function initHpAnimation(selector = '[data-hp-animation]'): void {
   });
 }
 
+/**
+ * Staggered fade-and-rise of the homepage step cards (title and video), played
+ * once the first time the steps section enters the viewport. Under reduced
+ * motion the cards are left untouched, i.e. visible from the start.
+ */
 export function initStepsReveal(): void {
   const cards = Array.from(document.querySelectorAll<HTMLElement>('.hp-steps-card_component'));
   if (cards.length === 0) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   const getContent = (card: HTMLElement): HTMLElement[] =>
     Array.from(card.querySelectorAll<HTMLElement>('.heading-style-h5, .hp-steps-card_video-wrp'));

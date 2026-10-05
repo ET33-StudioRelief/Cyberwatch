@@ -3,8 +3,10 @@ import { readdirSync } from 'fs';
 import { join, sep } from 'path';
 
 // Config output
-const BUILD_DIRECTORY = 'dist';
 const PRODUCTION = process.env.NODE_ENV === 'production';
+// Dev builds go to a gitignored folder so they can never overwrite the committed
+// production files in dist/, which jsDelivr serves to the live site.
+const BUILD_DIRECTORY = PRODUCTION ? 'dist' : '.dev';
 
 // Config entrypoint files
 const ENTRY_POINTS = ['src/index.ts'];

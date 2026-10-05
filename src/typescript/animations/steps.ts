@@ -1,9 +1,9 @@
 import { gsap } from '../../utils/gsap';
 
-/** Amplitude du flottement (en % de la hauteur du badge) de chaque côté du repos. */
+/** Float travel, in % of the badge height, on each side of its resting position. */
 const LEGEND_FLOAT_AMOUNT = 12;
 
-/** Vitesse de scrub du flottement du badge (plus haut = plus de retard/lissage). */
+/** ScrollTrigger scrub value of the float (higher = more lag and smoothing). */
 const LEGEND_FLOAT_SPEED = 1.4;
 
 /**

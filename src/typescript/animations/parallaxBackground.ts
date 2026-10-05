@@ -1,3 +1,4 @@
+import { ABOVE_MOBILE_PORTRAIT_QUERY } from '../../utils/breakpoint';
 import { gsap } from '../../utils/gsap';
 
 /**
@@ -9,6 +10,8 @@ import { gsap } from '../../utils/gsap';
  * - `data-parallax-amount`: travel distance in % of the image height (default 5)
  * - `data-parallax-speed`: ScrollTrigger scrub value (default 1.4)
  *
+ * Disabled on mobile portrait (< 480px) and under reduced motion.
+ *
  * @param selector - CSS selector targeting the parallax wrapper(s).
  */
 export function initBgParallax(selector = '[data-parallax-bg]'): void {
@@ -18,15 +21,15 @@ export function initBgParallax(selector = '[data-parallax-bg]'): void {
 
   mm.add(
     {
-      isDesktop: '(min-width: 480px)',
+      isAboveMobilePortrait: ABOVE_MOBILE_PORTRAIT_QUERY,
       reduceMotion: '(prefers-reduced-motion: reduce)',
     },
     (context) => {
-      const { isDesktop, reduceMotion } = (context.conditions ?? {}) as {
-        isDesktop: boolean;
+      const { isAboveMobilePortrait, reduceMotion } = (context.conditions ?? {}) as {
+        isAboveMobilePortrait: boolean;
         reduceMotion: boolean;
       };
-      if (!isDesktop || reduceMotion) return;
+      if (!isAboveMobilePortrait || reduceMotion) return;
 
       gsap.utils.toArray<HTMLElement>(selector).forEach((wrap) => {
         const img = wrap.querySelector('img');

@@ -2,11 +2,35 @@ name: CI
 
 on:
   pull_request:
+  push:
+    branches: [master]
 
 jobs:
-  Lint:
-    uses: finsweet/workflow-ci-lint/.github/workflows/lint.yml@main
+  check:
+    name: Lint, type-check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  # Comment this job out if your project doesn't have any tests
-  Tests:
-    uses: finsweet/workflow-ci-test/.github/workflows/test.yml@main
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm check
+
+      # dist/ is committed and served as-is by jsDelivr, so it must match the sources.
+      # This fails when someone forgot `pnpm build`, or committed a development build.
+      - name: Check dist/ is up to date
+        run: |
+          pnpm build
+          git diff --exit-code -- dist/index.js dist/index.css || {
+            echo "::error::dist/ is out of date. Run 'pnpm build' and commit the result."
+            exit 1
+          }

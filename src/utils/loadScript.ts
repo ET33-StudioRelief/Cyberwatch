@@ -2,15 +2,18 @@ export interface LoadScriptOptions {
   async?: boolean;
   defer?: boolean;
   type?: HTMLScriptElement['type'];
-  /** Attributs HTML supplémentaires (ex. `{ 'fs-scrolldisable': true }`). */
+  /** Extra HTML attributes; `true` or `''` sets a boolean attribute (e.g. `{ 'fs-list': true }`). */
   attributes?: Record<string, string | boolean>;
-  /** Ignore le chargement si un script avec la même `src` est déjà présent. */
+  /** Skip loading when a `<script>` with the same `src` is already in the page (default `true`). */
   idempotent?: boolean;
 }
 
 const loadedScripts = new Map<string, Promise<void>>();
 
-/** Charge dynamiquement un script externe. */
+/**
+ * Injects an external script into `<head>` and resolves once it has loaded.
+ * Calls with the same `src` share one promise, so a script is never loaded twice.
+ */
 export function loadScript(src: string, options: LoadScriptOptions = {}): Promise<void> {
   const cached = loadedScripts.get(src);
   if (cached) return cached;

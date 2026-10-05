@@ -13,7 +13,7 @@
   transform: translateX(-50%);
   padding: 4px 10px;
   border-radius: 4px;
-  background-color: #001a70;
+  background-color: var(--brand--dark-blue);
   color: #fff;
   font-size: 12px;
   line-height: 1.4;

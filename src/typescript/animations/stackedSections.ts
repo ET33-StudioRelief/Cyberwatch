@@ -1,12 +1,21 @@
 import { gsap, ScrollTrigger } from '../../utils/gsap';
 
-/** Facteur de réduction appliqué à l'étape précédente une fois recouverte. */
+/** Scale applied to the previous step while the next one slides over it. */
 const SCALE_DOWN = 0.92;
-/** Scale down plus prononcé pour la dernière step (recouverte par ce qui suit le wrapper). */
+/** Stronger scale-down for the last step, covered by whatever follows it in the wrapper. */
 const SCALE_DOWN_LAST = 0.1;
-/** Délai (en px de scroll) après lequel une step recouverte est effectivement masquée. */
+/** Scroll distance (px) after which a covered step is actually hidden. */
 const HIDE_DELAY = 150;
 
+/**
+ * Stacked-card scroll effect: each `.section_step` scrolls up over the previous
+ * one, which scales down and is hidden once fully covered. A step taller than
+ * the viewport first scrolls through its own overflow before the next one
+ * starts covering it.
+ *
+ * @param wrapperSelector - CSS selector targeting the wrapper of the steps.
+ * @param stepSelector - CSS selector targeting each step, inside the wrapper.
+ */
 export function initStackedSections(
   wrapperSelector = '.section-wrapper',
   stepSelector = '.section_step'
@@ -20,10 +29,9 @@ export function initStackedSections(
   const mm = gsap.matchMedia();
 
   mm.add('(prefers-reduced-motion: no-preference)', () => {
-    // Masque définitivement une step une fois recouverte, avec un délai
-    // après que la suivante ait atteint sa position épinglée (top top) :
-    // sans ce délai, le masquage se déclenche pile quand la suivante arrive
-    // tout juste, avant qu'elle ne recouvre visuellement tout l'écran.
+    // Hides a step once it is covered, HIDE_DELAY px after the next one reaches
+    // its pinned position (top top). Without the delay, the step would be hidden
+    // the moment the next one arrives, before it visually covers the screen.
     const hideBehind = (hiddenStep: HTMLElement, coveringTrigger: HTMLElement): void => {
       ScrollTrigger.create({
         trigger: coveringTrigger,
@@ -66,12 +74,11 @@ export function initStackedSections(
       hideBehind(previousStep, step);
     });
 
-    // La dernière step n'a pas de step suivante dans `steps` pour la
-    // recouvrir : si un élément la suit directement dans le wrapper (ex.
-    // section_perimetre), on la scale down/fade de la même façon, en
-    // utilisant cet élément comme trigger. `transformOrigin: 'top'` évite
-    // qu'une step très haute (donc avec un centre de scale très bas, hors
-    // écran) ne voie son sommet redescendre visuellement lors du scale.
+    // The last step has no following step to cover it. If an element directly
+    // follows it in the wrapper (e.g. section_perimetre), it is scaled down and
+    // faded the same way, using that element as the trigger. `transformOrigin:
+    // 'top'` keeps a very tall step (whose scale centre is far below, off
+    // screen) from visibly sliding its top edge down while it shrinks.
     const lastStep = steps[steps.length - 1];
     const afterLastStep = lastStep.nextElementSibling as HTMLElement | null;
 

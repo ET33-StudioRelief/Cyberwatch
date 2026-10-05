@@ -32,7 +32,7 @@
   width: 0.5rem;
   height: 0.5rem;
   aspect-ratio: 1 / 1;
-  border-radius: var(--radius-tiny, 0.125rem);
+  border-radius: 0.125rem;
   background: #ebebeb;
   cursor: pointer;
   transition:
@@ -46,8 +46,8 @@
   width: 2rem;
   height: 0.75rem;
   aspect-ratio: unset;
-  border-radius: var(--radius-xxsmall, 0.25rem);
-  background: #1057c8;
+  border-radius: 0.25rem;
+  background: var(--brand--medium-blue);
 }
 
 .testimonial_layout {

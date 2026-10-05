@@ -9,8 +9,11 @@ import { initAccordion } from './typescript/components/accordion';
 import { initGlowOrbit } from './typescript/components/button';
 import { initInfoDropdown } from './typescript/components/dropdown';
 import { initFooterGlow } from './typescript/components/footer';
+import { initLocalizedAnchors } from './typescript/components/localized-anchors';
 import { initDesktopDropdownHover, initNavbar, initNavMenu } from './typescript/components/navbar';
 import { initShareLinks } from './typescript/components/share-links';
+import { initHubspotForm } from './typescript/forms/hubspot-form';
+import { initNewsletter, interceptNewsletterSubmit } from './typescript/forms/newsletter';
 import { initBlogRelatedSlider } from './typescript/sliders/slider-blog-related';
 import { initCasesSlider } from './typescript/sliders/slider-cases';
 import { initHpStepsSlider } from './typescript/sliders/slider-hp-steps';
@@ -19,6 +22,8 @@ import { initProgrammeSlider } from './typescript/sliders/slider-programme';
 import { initTestimonialSlider } from './typescript/sliders/slider-testimonial';
 import { initTimelineSlider } from './typescript/sliders/slider-timeline';
 import { loadFinsweetAttributes } from './utils/finsweet';
+
+interceptNewsletterSubmit();
 
 window.Webflow ||= [];
 window.Webflow.push(() => {
@@ -32,6 +37,10 @@ window.Webflow.push(() => {
   initAccordion();
   initInfoDropdown();
   initShareLinks();
+  initLocalizedAnchors();
+
+  initHubspotForm();
+  initNewsletter();
 
   initBgParallax();
   initHpAnimation();

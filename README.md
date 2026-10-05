@@ -158,6 +158,18 @@ What that component owns:
 - **Empty slot hiding** — `[class*="-slot"]:empty { display: none }`, which collapses unfilled Webflow component slots.
 - **The 1350px breakpoint helpers** — `.hide-tablet.is-breakpoint-1350` and `.hide-desktop.is-breakpoint-1350`.
 - **Hiding the active locale** in the language switcher.
+- **The newsletter honeypot** — `.nl-hp`, which moves the `website` trap field off-screen (not `display: none`, which some bots detect). In the repo it would be visible for a moment before the CDN stylesheet arrives:
+
+  ```css
+  .nl-hp {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  ```
+
 - **The `.gradient-border` family** — the gradient border technique and its `is-top-bottom`, `is-left-right`, `is-orange` and `is-light` variants.
 - **Rich text typography** — heading sizes, image radius and `figcaption` styling for `.text-rich-text`, including the `.is-article` blog variant.
 - **A mobile border-radius fix** on `.hp-animation_card`.
@@ -181,7 +193,8 @@ src/
   css/                    one stylesheet per component or page section
   typescript/
     animations/           scroll-driven GSAP animations
-    components/           interactive UI (navbar, accordion, dropdown, buttons, share links)
+    components/           interactive UI (navbar, accordion, dropdown, buttons, share links, localized anchors)
+    forms/                HubSpot contact form embed and newsletter form submission
     sliders/              one Swiper instance per slider
   utils/                  shared helpers (GSAP and Swiper setup, breakpoints, script loader)
 tests/                    Playwright tests
@@ -205,6 +218,14 @@ This is the contract between the code and the Webflow Designer. Renaming a class
 | `initGlowOrbit`            | `.button` with `data-wf--button-general--variant="base"`                                                            | Rotates the conic-gradient glow ring around the button border while hovered, by driving the `--glow-angle` custom property used in `button.css`.                                                      |
 | `initFooterGlow`           | `.footer_glow-bg` positioned inside `.footer_btm-wrp`                                                               | Endless slow random drift of the footer light halo.                                                                                                                                                   |
 | `initShareLinks`           | `[fs-socialshare-element="url"]` and `[data-share="copy-content"]`, article body as `.text-rich-text.is-article`    | Copy-to-clipboard for the article URL and the article text. Adds `.is-copied` for 1.5s and exposes the confirmation label as `data-copied-label` for the CSS. LinkedIn and X are handled by Finsweet. |
+| `initLocalizedAnchors`     | The French section IDs listed in `localized-anchors.ts`, on the `/en` and `/es` pages                               | Webflow Localization cannot translate element IDs. Renames them to the localized slug, rewrites the matching `#` links, and scrolls to the target when the page opens with a hash.                    |
+
+### Forms
+
+| Module            | Required in Webflow                                                                                                                                                                                                                              | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `initHubspotForm` | `[data-hs-form]` on an empty div                                                                                                                                                                                                                 | Embeds the HubSpot contact form matching the `<html lang>` (fr-FR, en-GB, es-ES), then redirects to the localized confirmation page on success. Form IDs and redirects live in `hubspot-form.ts`.                                                                                                                                                                                                             |
+| `initNewsletter`  | `form[data-newsletter="form"]` with an email input, a `website` input wrapped in `.nl-hp`, `[data-newsletter="privacy"]` on the consent checkbox or its label, an optional `tracking` checkbox, and an empty `[data-newsletter="turnstile"]` div | Posts the form to the Cloudflare Worker (which forwards to HubSpot with the consent proof) instead of Webflow Forms, behind an invisible Turnstile widget. Shows Webflow's native `.w-form-done` / `.w-form-fail` blocks. The submit listener is registered before `Webflow.push` so it always runs ahead of Webflow's own form handler. Set `data-hs-do-not-collect="true"` on the form in the Designer too. |
 
 ### Animations
 

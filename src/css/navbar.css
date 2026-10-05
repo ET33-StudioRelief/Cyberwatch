@@ -1,3 +1,7 @@
+/* The mobile/tablet menu layout (`.navbar_menu` states, `html.nav-scroll-lock`,
+   `.nav_button`, the 1350px desktop reset) is NOT here: it is inlined in the
+   Webflow `global-style-custom` embed so it applies on first paint. See the README. */
+
 /* ─── Scroll hide (initNavbar) ─── */
 /* GPU hint for GSAP yPercent — desktop only to avoid permanent mobile cost. */
 @media (min-width: 768px) {

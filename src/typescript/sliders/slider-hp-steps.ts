@@ -4,7 +4,7 @@ import { Swiper } from '../../utils/swiper';
 const BREAKPOINT_QUERY = '(max-width: 1350px)';
 
 /**
- * Steps slider, active only below 1300px. Swiper is created and torn down as
+ * Steps slider, active only below 1350px. Swiper is created and torn down as
  * the viewport crosses the breakpoint (window resize, device rotation).
  *
  * @param selector - CSS selector targeting the Swiper container.

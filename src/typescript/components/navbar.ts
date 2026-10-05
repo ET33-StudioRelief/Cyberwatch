@@ -1,7 +1,7 @@
 import { TABLET_QUERY } from '../../utils/breakpoint';
 import { gsap, ScrollTrigger } from '../../utils/gsap';
 
-/** Matches the `.navbar_menu` desktop breakpoint set in navbar.css. */
+/** Matches the `.navbar_menu` desktop breakpoint set in the Webflow `global-style-custom` embed. */
 const NAV_MENU_DESKTOP_QUERY = '(min-width: 1350px)';
 const SCROLL_LOCK_CLASS = 'nav-scroll-lock';
 const DROPDOWN_VIEWPORT_MARGIN = 16;
@@ -11,6 +11,11 @@ const ANCHORED_DROPDOWN_LIST_CLASS = 'nav_dropdown-list';
 const SCROLL_THRESHOLD = 5;
 const SCROLL_DELTA = 5;
 const SCROLLED_THRESHOLD = 80;
+
+/** Idle time after the last scroll update before a programmatic anchor jump is considered finished. */
+const ANCHOR_SETTLE_MS = 120;
+/** Hard cap, so a never-settling anchor scroll can't freeze the navbar visible forever. */
+const ANCHOR_TIMEOUT_MS = 1200;
 
 const positionDropdownList = (toggle: HTMLElement, list: HTMLElement): void => {
   const toggleRect = toggle.getBoundingClientRect();
@@ -79,6 +84,54 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
     slideNavbarOut();
   };
 
+  /**
+   * Anchor jumps (nav links, on-load `#hash`) move the page down by hundreds of
+   * pixels at once, which would otherwise read as a user scrolling down and hide
+   * the navbar right as the user lands on the section.
+   */
+  let isAnchorScrolling = false;
+  let settleTimer = 0;
+  let timeoutTimer = 0;
+
+  const endAnchorScroll = (): void => {
+    isAnchorScrolling = false;
+    window.clearTimeout(settleTimer);
+    window.clearTimeout(timeoutTimer);
+  };
+
+  const beginAnchorScroll = (): void => {
+    isAnchorScrolling = true;
+    show();
+    window.clearTimeout(timeoutTimer);
+    timeoutTimer = window.setTimeout(endAnchorScroll, ANCHOR_TIMEOUT_MS);
+  };
+
+  const isSamePageAnchor = (link: HTMLAnchorElement): boolean => {
+    const url = new URL(link.href, window.location.href);
+    return (
+      url.hash.length > 1 &&
+      url.origin === window.location.origin &&
+      url.pathname === window.location.pathname
+    );
+  };
+
+  document.addEventListener('click', (event) => {
+    const { target } = event;
+    if (!(target instanceof Element)) return;
+
+    const link = target.closest<HTMLAnchorElement>('a[href*="#"]');
+    if (link && isSamePageAnchor(link)) beginAnchorScroll();
+  });
+
+  // Covers cross-page anchors (the hash is applied on load) and history navigation.
+  window.addEventListener('hashchange', beginAnchorScroll);
+  if (window.location.hash.length > 1) beginAnchorScroll();
+
+  // A real scroll gesture always takes control back immediately.
+  (['wheel', 'touchstart', 'keydown'] as const).forEach((type) => {
+    window.addEventListener(type, endAnchorScroll, { passive: true });
+  });
+
   updateScrolled(window.scrollY);
 
   window.matchMedia(TABLET_QUERY).addEventListener('change', () => {
@@ -93,6 +146,14 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
       const delta = scrollY - lastScrollY;
 
       updateScrolled(scrollY);
+
+      if (isAnchorScrolling) {
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(endAnchorScroll, ANCHOR_SETTLE_MS);
+        show();
+        lastScrollY = scrollY;
+        return;
+      }
 
       if (navbar.classList.contains('w--open') || scrollY <= SCROLL_THRESHOLD) {
         show();
@@ -111,8 +172,12 @@ export function initNavbar(selector = '[trigger="navbar"]'): void {
 /**
  * Mobile/tablet nav menu (< 1350px): toggles `.navbar_menu.is-open` and locks
  * page scroll while open so a scroll gesture stays inside the menu instead of
- * scrolling the page behind it (`.navbar_menu` handles its own overflow, see navbar.css).
+ * scrolling the page behind it (`.navbar_menu` handles its own overflow).
  * Closes on outside click, Escape, or crossing back into the desktop breakpoint.
+ *
+ * The matching CSS (closed/open states, `html.nav-scroll-lock`, desktop reset) is
+ * inlined in the Webflow `global-style-custom` embed rather than in navbar.css, so
+ * the menu is never visible unstyled on first paint. See the README.
  *
  * @param selector - CSS selector targeting the nav wrapper.
  */

@@ -1,7 +1,5 @@
+import { NAV_MOBILE_QUERY } from '../../utils/breakpoint';
 import { Swiper } from '../../utils/swiper';
-
-/** Below this width the steps become a Swiper; above it Webflow/CSS handles the grid layout. */
-const BREAKPOINT_QUERY = '(max-width: 1350px)';
 
 /**
  * Steps slider, active only below 1350px. Swiper is created and torn down as
@@ -18,7 +16,8 @@ export function initHpStepsSlider(selector = '.hp-steps_layout'): void {
   const nextEl = scope.querySelector<HTMLElement>('[trigger="hp-steps-next-slide"]');
   const paginationEl = scope.querySelector<HTMLElement>('[trigger="hp-steps-pagination"]');
 
-  const mql = window.matchMedia(BREAKPOINT_QUERY);
+  // Below 1350px the steps become a Swiper; above it Webflow/CSS handles the grid layout.
+  const mql = window.matchMedia(NAV_MOBILE_QUERY);
   let instance: InstanceType<typeof Swiper> | null = null;
 
   const sync = (): void => {

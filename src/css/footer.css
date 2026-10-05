@@ -32,14 +32,14 @@
   opacity: 0.25;
   background: radial-gradient(50% 50% at 50% 50%, #1089ff 0%, rgba(16, 137, 255, 0.25) 100%);
   filter: blur(100px);
-  width: var(--container-small, 53.625rem);
-  height: var(--container-small, 53.625rem);
+  width: 53.625rem;
+  height: 53.625rem;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
   .footer_glow-bg {
-    width: var(--container-small, 16.875rem);
-    height: var(--container-small, 16.875rem);
-    border-radius: var(--container-small, 16.875rem);
+    width: 16.875rem;
+    height: 16.875rem;
+    border-radius: 16.875rem;
     filter: blur(50px);
   }
 }

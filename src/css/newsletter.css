@@ -1,0 +1,7 @@
+/* ─── Submit pending state (driven by initNewsletter) ───
+   The .nl-hp honeypot rule is NOT here: it must hide the field on the first
+   frame, so it lives in the Webflow critical CSS (global-style-custom). */
+[data-newsletter='form'] [type='submit'].is-loading {
+  opacity: 0.6;
+  cursor: progress;
+}
